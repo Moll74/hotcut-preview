@@ -179,7 +179,7 @@ root.className = 'hc-chat';
 root.innerHTML = `
   <button class="hc-fab" aria-label="Åbn Hot Cut AI-assistent" aria-expanded="false" aria-controls="hcPanel">${ICON}<span class="hc-badge">1</span></button>
   <div class="hc-bubble" hidden>
-    <button class="hc-bopen" type="button" aria-label="Åbn Hot Cut AI-assistent"><b>Spørg mig døgnet rundt</b><small>om priser, behandlinger og produkter</small></button>
+    <button class="hc-bopen" type="button" aria-label="Åbn Hot Cut AI-assistent"><b>Hej, jeg er din AI-assistent 👋</b><small>Jeg er her 24/7, spørg mig om alt</small></button>
     <button class="hc-bx" type="button" aria-label="Luk">✕</button>
   </div>
   <section class="hc-panel" id="hcPanel" role="dialog" aria-label="Hot Cut AI-assistent" hidden>
@@ -281,17 +281,31 @@ function toggle(open) {
 fab.addEventListener('click', () => toggle(panel.hidden));
 root.querySelector('.hc-x').addEventListener('click', () => toggle(false));
 addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
-/* proactive greeting: once per visit, after a short delay, never while the chat is open */
-const seen = (() => { try { return sessionStorage.getItem('hc-greet') === '1'; } catch (e) { return false; } })();
-function hideGreet() { greet.classList.remove('show'); setTimeout(() => { greet.hidden = true; }, 350); }
+/* recurring speech bubble: pops up regularly while the chat is closed, rotating short messages */
+const MAIN = ['Hej, jeg er din AI-assistent 👋', 'Jeg er her 24/7, spørg mig om alt'];
+const HINTS = [
+  ['Spørg mig om priser', 'Fx hvad en dameklip eller balayage koster'],
+  ['Spørg mig om produkter', 'Olaplex, Sanzi, ghd og meget mere'],
+  ['Overvejer du extensions?', 'Spørg mig om priser og pleje'],
+  ['Hvornår har I åbent?', 'Spørg mig, jeg svarer med det samme'],
+];
+const BUBBLES = HINTS.flatMap(h => [MAIN, h]);   // the main message every other time
+let bi = 0, snoozeUntil = 0, hideT;
+function hideGreet() { greet.classList.remove('show'); clearTimeout(hideT); setTimeout(() => { if (!greet.classList.contains('show')) greet.hidden = true; }, 350); }
 function showGreet() {
-  if (!panel.hidden || document.documentElement.classList.contains('menu-open')) return;
+  if (!panel.hidden || document.documentElement.classList.contains('menu-open') || Date.now() < snoozeUntil || document.hidden) return;
+  const [t, s] = BUBBLES[bi++ % BUBBLES.length];
+  greet.querySelector('.hc-bopen b').textContent = t; greet.querySelector('.hc-bopen small').textContent = s;
   greet.hidden = false; requestAnimationFrame(() => greet.classList.add('show'));
-  try { sessionStorage.setItem('hc-greet', '1'); } catch (e) {}
-  track('chat_greet_shown');
+  [fab, document.querySelector('.dock-chat')].forEach(el => { if (!el) return; el.classList.remove('wiggle'); void el.offsetWidth; el.classList.add('wiggle'); });
+  clearTimeout(hideT); hideT = setTimeout(hideGreet, 7000);
+  track('chat_bubble_shown', { msg: t });
 }
-greet.querySelector('.hc-bx').addEventListener('click', () => { hideGreet(); track('chat_bubble_closed'); });
-greet.querySelector('.hc-bopen').addEventListener('click', () => { toggle(true); track('chat_bubble_opened'); });
-if (!seen) setTimeout(showGreet, innerWidth <= 760 ? 8000 : 5000);
+greet.querySelector('.hc-bx').addEventListener('click', () => { hideGreet(); snoozeUntil = Date.now() + 120000; track('chat_bubble_closed'); });
+greet.querySelector('.hc-bopen').addEventListener('click', () => { toggle(true); track('chat_bubble_opened', { msg: greet.querySelector('.hc-bopen b').textContent }); });
+greet.addEventListener('mouseenter', () => clearTimeout(hideT));
+greet.addEventListener('mouseleave', () => { hideT = setTimeout(hideGreet, 3000); });
+setTimeout(showGreet, 4000);
+setInterval(showGreet, 30000);
 window.hcAssistant = { answer: q => { const e = answer(q); return e.id || 'fallback'; }, open: () => toggle(true), greet: showGreet };
 })();
