@@ -947,9 +947,7 @@ const R = () => Math.max(250, Math.min(innerWidth * .4, 580));
 imgs.forEach(n => { const f = document.createElement('figure'); f.innerHTML = `<img src="web/${n}.jpg" alt="Frisure fra Hot Cut" loading="lazy">`; ring.appendChild(f); });
 const placeRing = () => [...ring.children].forEach((f, i) => f.style.transform = `rotateY(${i * 360 / imgs.length}deg) translateZ(${R()}px)`);
 placeRing(); addEventListener('resize', placeRing);
-// gallery: the ring eases in as you arrive, then turns slowly while the section is pinned
-gsap.fromTo(ring, { scale: .82, opacity: 0 }, { scale: 1, opacity: 1, ease: 'power2.out',
-  scrollTrigger: { trigger: '#gallery', start: 'top 85%', end: 'top top', scrub: 1 } });
+// gallery: the ring keeps its full size; it only turns slowly while the section is pinned
 gsap.fromTo('.gal-title', { y: 40, opacity: 0 }, { y: 0, opacity: 1, ease: 'power2.out',
   scrollTrigger: { trigger: '#gallery', start: 'top 80%', end: 'top 20%', scrub: 1 } });
 gsap.fromTo(ring, { rotateY: 20, rotateX: -6 }, { rotateY: -200, rotateX: 4, ease: 'none',
