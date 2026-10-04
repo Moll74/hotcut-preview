@@ -179,7 +179,7 @@ root.className = 'hc-chat';
 root.innerHTML = `
   <button class="hc-fab" aria-label="Åbn Hot Cut AI-assistent" aria-expanded="false" aria-controls="hcPanel">${ICON}<span class="hc-badge">1</span></button>
   <div class="hc-bubble" hidden>
-    <button class="hc-bopen" type="button" aria-label="Åbn Hot Cut AI-assistent"><b>Hej, jeg er din AI-assistent 👋</b><small>Jeg er her 24/7, spørg mig om alt</small></button>
+    <button class="hc-bopen" type="button" aria-label="Åbn Hot Cut AI-assistent"><b>Hej, jeg er din AI-assistent 👋</b><small>Jeg er her 24/7 og svarer på dine spørgsmål</small></button>
     <button class="hc-bx" type="button" aria-label="Luk">✕</button>
   </div>
   <section class="hc-panel" id="hcPanel" role="dialog" aria-label="Hot Cut AI-assistent" hidden>
@@ -282,7 +282,7 @@ fab.addEventListener('click', () => toggle(panel.hidden));
 root.querySelector('.hc-x').addEventListener('click', () => toggle(false));
 addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
 /* recurring speech bubble: pops up regularly while the chat is closed, rotating short messages */
-const MAIN = ['Hej, jeg er din AI-assistent 👋', 'Jeg er her 24/7, spørg mig om alt'];
+const MAIN = ['Hej, jeg er din AI-assistent 👋', 'Jeg er her 24/7 og svarer på dine spørgsmål'];
 const HINTS = [
   ['Spørg mig om priser', 'Fx hvad en dameklip eller balayage koster'],
   ['Spørg mig om produkter', 'Olaplex, Sanzi, ghd og meget mere'],
