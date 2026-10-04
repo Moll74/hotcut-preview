@@ -501,3 +501,9 @@ footer .copy{flex-basis:100%;order:9;margin-top:6px;padding-top:16px;border-top:
 .prod-offer-btns{display:flex;gap:10px;flex-wrap:wrap}
 @media(max-width:980px){.brands{grid-template-columns:1fr 1fr}.prod-head{grid-template-columns:1fr}}
 @media(max-width:600px){.brands{grid-template-columns:1fr}}
+.b-img{position:relative;margin:-26px -24px 8px;aspect-ratio:4/3;overflow:hidden;border-radius:18px 18px 0 0;background:#fff}
+.b-img img{width:100%;height:100%;object-fit:contain;transition:transform .8s}
+.b-img.photo img{object-fit:cover}
+.b-img.wide img{object-position:30% 30%}
+.brand:hover .b-img img{transform:scale(1.04)}
+.b-img figcaption{position:absolute;right:10px;bottom:8px;font-size:.62rem;letter-spacing:.06em;padding:.25em .7em;border-radius:999px;background:rgba(255,255,255,.85);color:#5a4a42}
