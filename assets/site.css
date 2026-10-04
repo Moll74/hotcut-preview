@@ -507,3 +507,11 @@ footer .copy{flex-basis:100%;order:9;margin-top:6px;padding-top:16px;border-top:
 .b-img.wide img{object-position:30% 30%}
 .brand:hover .b-img img{transform:scale(1.04)}
 .b-img figcaption{position:absolute;right:10px;bottom:8px;font-size:.62rem;letter-spacing:.06em;padding:.25em .7em;border-radius:999px;background:rgba(255,255,255,.85);color:#5a4a42}
+.fest-insp{display:grid;grid-template-columns:.8fr 1fr 1fr;gap:18px;align-items:end;margin-top:clamp(50px,7vw,90px)}
+.fest-insp-head{align-self:center}
+.fest-insp-head p{color:var(--mute);margin-top:14px;max-width:34ch}
+.fest-insp figure{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:4/5;background:#000}
+.fest-insp img{width:100%;height:100%;object-fit:cover;transition:transform .8s}
+.fest-insp figure:hover img{transform:scale(1.04)}
+.fest-insp figcaption{position:absolute;left:12px;bottom:10px;font-size:.7rem;padding:.3em .85em;border-radius:999px;background:rgba(var(--sf),.8);color:var(--ink);backdrop-filter:blur(6px)}
+@media(max-width:860px){.fest-insp{grid-template-columns:1fr 1fr}.fest-insp-head{grid-column:span 2}}
