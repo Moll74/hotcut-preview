@@ -106,7 +106,7 @@ const KB = [
   { id: 'analysis', k: ['analyse', 'håranalyse', 'analysen', 'voucher', 'rabat på produkter', 'produktrabat', 'hovedbundsanalyse', 'hovedbund', 'hårtab', 'skæl', 'tørt hår', 'tør hovedbund', 'fedtet', 'kløe', 'scanner', 'mikroskop', 'maskine', 'udstyr', 'undersøge mit hår', 'hvad har mit hår brug for'],
     a: `Vi tilbyder <b>hår- og hovedbundsanalyse</b> med vores særlige analyseudstyr. Et håndholdt kamera med kraftig forstørrelse viser din hovedbund og dine hårstrå på en skærm, så du selv kan se dem. Vi forklarer, hvad vi ser, og giver dig konkrete råd om behandling og pleje. <br><br><b>Prisen er 100 kr</b>, og køber du produkter for 400 kr, trækkes de 100 kr fra. Det svarer til 25 % rabat på produkterne. Analysen kan kombineres med en klipning.`, act: [{ label: 'Book analyse', href: BOOK, primary: true }, 'call'] },
   { id: 'brands', k: ['mærker', 'mærke', 'brands', 'brand', 'hvilke produkter', 'hvilke mærker', 'produkter sælger i', 'hvad sælger i'],
-    a: `Vi bruger og sælger <b>Olaplex</b>, <b>Roze Avenue</b>, <b>Sanzi Beauty</b>, <b>Hairtalk</b>, <b>ghd</b> og <b>idHAIR</b>. Spørg mig om et af mærkerne eller et bestemt produkt.<br><br>Tip: en håranalyse koster 100 kr, og beløbet trækkes fra, når du køber produkter for 400 kr.`, act: [{ label: 'Se produkterne', href: '#produkter' }, 'call'] },
+    a: `Vi bruger og sælger <b>Olaplex</b>, <b>Roze Avenue</b>, <b>Sanzi Beauty</b>, <b>Hairtalk</b>, <b>ghd</b> og <b>idHAIR</b>. Vil du vide mere om et af mærkerne eller et bestemt produkt, så skriv bare.<br><br>Tip: en håranalyse koster 100 kr, og beløbet trækkes fra, når du køber produkter for 400 kr.`, act: [{ label: 'Se produkterne', href: '#produkter' }, 'call'] },
   { id: 'olaplex', k: ['olaplex', 'bond repair', 'bond', 'bindinger', 'no.3', 'no 3', 'nr 3', 'hair perfector', 'no.4', 'no 4', 'nr 4', 'bond maintenance', '4p', 'no.4p', 'silvershampoo', 'lilla shampoo', 'gule toner', 'gult hår', 'messing', '4c', 'no.4c', 'dybderens', 'clarifying', 'no.7', 'olie', 'hårolie', 'bonding oil'],
     a: `<b>Olaplex</b> genopbygger de bindinger i håret, som farvning, varme og sol bryder ned. Olaplex er med i vores farvebehandlinger på mellemlangt og langt hår. Til hjemmebrug har vi:<br>• <b>No.3 Hair Perfector</b>: kur, der kommes i fugtigt hår <i>før</i> shampoo og virker i mindst 10 minutter.<br>• <b>No.4 Bond Maintenance</b>: plejende shampoo til alle hårtyper.<br>• <b>No.4P Blonde Enhancer</b>: lilla toningsshampoo, der fjerner gule og messingagtige toner i lyst hår.<br>• <b>No.4C Clarifying</b>: dybderensende shampoo mod rester af produkter, fx én gang om ugen.<br>• <b>Olien (No.7 Bonding Oil)</b>: glans og varmebeskyttelse.<br><br>Spørg os i salonen, hvilken kombination der passer til dit hår.`, act: [{ label: 'Olaplex.com', href: 'https://olaplex.com/' }, 'call'] },
   { id: 'roze', k: ['roze avenue', 'roze', 'tørshampoo', 'dry shampoo', 'volumen tørshampoo', 'brown covering', 'luxury restore', 'restore masq', 'hårmaske', 'selvbruner', 'self tan', 'glow collection', 'selvbrunerdråber', 'mousse', 'money masque'],
@@ -179,7 +179,7 @@ root.className = 'hc-chat';
 root.innerHTML = `
   <button class="hc-fab" aria-label="Åbn Hot Cut AI-assistent" aria-expanded="false" aria-controls="hcPanel">${ICON}<span class="hc-badge">1</span></button>
   <div class="hc-bubble" hidden>
-    <button class="hc-bopen" type="button" aria-label="Åbn Hot Cut AI-assistent"><b>Hej, jeg er din AI-assistent 👋</b><small>Jeg er her 24/7 og svarer på dine spørgsmål</small></button>
+    <button class="hc-bopen" type="button" aria-label="Åbn Hot Cut AI-assistent"><b>Hej, jeg er din AI-assistent 👋</b><small>Jeg er her 24/7, hvis du har spørgsmål</small></button>
     <button class="hc-bx" type="button" aria-label="Luk">✕</button>
   </div>
   <section class="hc-panel" id="hcPanel" role="dialog" aria-label="Hot Cut AI-assistent" hidden>
@@ -274,7 +274,7 @@ function toggle(open) {
   document.documentElement.classList.toggle('chat-open', open);
   if (open && !greeted) {
     greeted = true; track('chat_open');
-    bubble(`Hej! 👋 Jeg er <b>Hot Cuts AI-assistent</b>. Spørg mig om priser, behandlinger, extensions eller åbningstider.<br><span class="hc-live">${status()}</span>`, 'bot');
+    bubble(`Hej! 👋 Jeg er <b>Hot Cuts AI-assistent</b> og er her for at hjælpe dig, døgnet rundt. Du kan fx spørge om priser, behandlinger eller åbningstider.<br><span class="hc-live">${status()}</span>`, 'bot');
   }
   if (open && innerWidth > 760) setTimeout(() => input.focus(), 50);
 }
@@ -282,12 +282,12 @@ fab.addEventListener('click', () => toggle(panel.hidden));
 root.querySelector('.hc-x').addEventListener('click', () => toggle(false));
 addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
 /* recurring speech bubble: pops up regularly while the chat is closed, rotating short messages */
-const MAIN = ['Hej, jeg er din AI-assistent 👋', 'Jeg er her 24/7 og svarer på dine spørgsmål'];
+const MAIN = ['Hej, jeg er din AI-assistent 👋', 'Jeg er her 24/7, hvis du har spørgsmål'];
 const HINTS = [
-  ['Spørg mig om priser', 'Fx hvad en dameklip eller balayage koster'],
-  ['Spørg mig om produkter', 'Olaplex, Sanzi, ghd og meget mere'],
-  ['Overvejer du extensions?', 'Spørg mig om priser og pleje'],
-  ['Hvornår har I åbent?', 'Spørg mig, jeg svarer med det samme'],
+  ['Kan jeg hjælpe?', 'Fx med priser på klip og farve'],
+  ['Leder du efter et produkt?', 'Jeg hjælper gerne med at finde det rigtige'],
+  ['Overvejer du extensions?', 'Jeg fortæller gerne om priser og pleje'],
+  ['Hvornår har vi åbent?', 'Jeg hjælper gerne, døgnet rundt'],
 ];
 const BUBBLES = HINTS.flatMap(h => [MAIN, h]);   // the main message every other time
 let bi = 0, snoozeUntil = 0, hideT;
