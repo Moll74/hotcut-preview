@@ -446,3 +446,5 @@ html.chat-open .dock{opacity:0;pointer-events:none}
 :root[data-theme="light"] .ext-badge,:root[data-theme="light"] .gal figcaption{color:var(--ink)}
 :root[data-theme="light"] .btn{box-shadow:0 10px 26px -12px rgba(168,112,95,.8)}
 html.theme-anim *{transition:background-color .5s,color .5s,border-color .5s!important}
+
+footer .copy{flex-basis:100%;order:9;margin-top:6px;padding-top:16px;border-top:1px solid var(--line);font-size:.72rem;line-height:1.6;color:var(--dim)}
