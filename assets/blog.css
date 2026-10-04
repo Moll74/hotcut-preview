@@ -1,0 +1,81 @@
+/* Blog: overview + articles. Builds on site.css tokens, so day/night mode works the same. */
+.page-top{padding:clamp(110px,14vw,150px) 0 clamp(40px,6vw,70px)}
+.crumbs{display:flex;flex-wrap:wrap;gap:8px;font-size:.78rem;color:var(--mute);margin-bottom:22px}
+.crumbs a{color:var(--mute);border-bottom:1px solid transparent}
+.crumbs a:hover{color:var(--rose-l);border-color:currentColor}
+.crumbs span[aria-current]{color:var(--ink)}
+.crumbs .sep{opacity:.5}
+
+/* overview */
+.blog-head h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.6rem,6vw,5rem);line-height:1;margin-top:14px}
+.blog-head h1 em{color:var(--rose-l)}
+.blog-head p{color:var(--mute);max-width:52ch;margin-top:18px}
+.posts{display:grid;grid-template-columns:repeat(6,1fr);gap:24px;padding-bottom:clamp(80px,10vw,130px)}
+.post-card{grid-column:span 2;display:flex;flex-direction:column;border-radius:20px;overflow:hidden;background:rgba(var(--inkc),.03);border:1px solid var(--line);transition:transform .4s cubic-bezier(.2,.7,.2,1),border-color .3s}
+.post-card:hover{transform:translateY(-6px);border-color:rgba(224,176,161,.45)}
+.post-card.feature{grid-column:span 6;flex-direction:row}
+.post-card.half{grid-column:span 3}
+.post-card .pc-img{position:relative;aspect-ratio:4/3;overflow:hidden;background:#000}
+.post-card.feature .pc-img{flex:1.2;aspect-ratio:auto;min-height:420px}
+.post-card .pc-img img{width:100%;height:100%;object-fit:cover;transition:transform .8s}
+.post-card:hover .pc-img img{transform:scale(1.04)}
+.pc-body{padding:24px 24px 26px;display:flex;flex-direction:column;gap:12px;flex:1}
+.post-card.feature .pc-body{flex:1;justify-content:center;padding:clamp(28px,4vw,56px)}
+.pc-meta{display:flex;gap:12px;align-items:center;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--rose-l)}
+.pc-meta span{color:var(--dim);letter-spacing:.06em;text-transform:none}
+.pc-body h2,.pc-body h3{font-family:var(--serif);font-weight:400;font-size:1.65rem;line-height:1.12}
+.post-card.feature h2{font-size:clamp(2rem,3.4vw,3rem)}
+.pc-body p{color:var(--mute);font-size:.92rem}
+.pc-more{margin-top:auto;font-size:.84rem;color:var(--rose-l);font-weight:500}
+@media(max-width:980px){.post-card,.post-card.half{grid-column:span 3}.post-card.feature{grid-column:span 6;flex-direction:column}.post-card.feature .pc-img{min-height:0;aspect-ratio:16/10}}
+@media(max-width:640px){.posts{grid-template-columns:1fr}.post-card,.post-card.half,.post-card.feature{grid-column:auto}}
+
+/* article */
+.read-bar{position:fixed;left:0;right:0;top:0;height:3px;z-index:55;pointer-events:none}
+.read-bar i{display:block;height:100%;background:var(--rose);transform-origin:left;transform:scaleX(0)}
+.post-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(30px,5vw,80px);align-items:end}
+.post-hero > *{min-width:0}
+.post-hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,5vw,4.4rem);line-height:1.02;margin:14px 0 20px;text-wrap:balance}
+.post-hero h1 em{color:var(--rose-l)}
+.lead{font-size:clamp(1.05rem,1.6vw,1.22rem);color:var(--ink2);max-width:46ch;line-height:1.6}
+.byline{display:flex;align-items:center;gap:12px;margin-top:26px;font-size:.82rem;color:var(--mute)}
+.byline .faces img{width:30px;height:30px}
+.post-hero figure{border-radius:22px;overflow:hidden;aspect-ratio:4/5;max-height:640px;position:relative}
+.post-hero figure img{width:100%;height:100%;object-fit:cover}
+.post-hero figcaption,.post-body figcaption{font-size:.72rem;color:var(--dim);letter-spacing:.06em;margin-top:10px}
+.post-hero figure figcaption{position:absolute;left:12px;bottom:10px;margin:0;padding:.3em .8em;border-radius:999px;background:rgba(var(--sf),.75)}
+.post-wrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:clamp(30px,6vw,90px);padding:clamp(40px,6vw,80px) 0 clamp(80px,10vw,120px)}
+.post-body{max-width:68ch;font-size:1.06rem;line-height:1.75;color:var(--ink2)}
+.post-body > * + *{margin-top:1.1em}
+.post-body h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.7rem,2.6vw,2.3rem);line-height:1.15;color:var(--ink);margin-top:1.9em}
+.post-body h3{font-size:1.05rem;font-weight:600;color:var(--ink);margin-top:1.6em}
+.post-body ul{padding-left:1.1em}
+.post-body li + li{margin-top:.5em}
+.post-body li::marker{color:var(--rose-l)}
+.post-body strong{color:var(--ink);font-weight:500}
+.post-body a{color:var(--rose-l);border-bottom:1px solid rgba(224,176,161,.4)}
+.post-body figure{margin-top:2em;margin-bottom:.4em}
+.post-body figure img{width:100%;border-radius:18px;aspect-ratio:4/3;object-fit:cover}
+.tip{padding:20px 22px;border-radius:16px;background:rgba(var(--inkc),.04);border-left:3px solid var(--rose);font-size:.98rem}
+.tip b{display:block;font-family:var(--serif);font-weight:500;font-size:1.2rem;color:var(--ink);margin-bottom:4px}
+.sources{margin-top:3em;padding-top:1.4em;border-top:1px solid var(--line);font-size:.82rem;color:var(--mute)}
+.sources h2{font-family:var(--sans);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin:0 0 .8em;font-weight:500}
+.sources a{color:var(--mute)}
+.aside{position:sticky;top:100px;align-self:start;display:grid;gap:16px}
+.book-box{padding:24px;border-radius:20px;background:linear-gradient(150deg,rgba(181,129,114,.24),rgba(181,129,114,.06));border:1px solid rgba(224,176,161,.3)}
+.book-box h3{font-family:var(--serif);font-weight:400;font-size:1.5rem;line-height:1.1}
+.book-box ul{list-style:none;margin:14px 0 18px;font-size:.88rem}
+.book-box li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.book-box li span:last-child{white-space:nowrap;color:var(--ink)}
+.book-box .btn{width:100%}
+.book-box small{display:block;margin-top:10px;font-size:.78rem;color:var(--mute);text-align:center}
+.ask-box{padding:20px 22px;border-radius:20px;border:1px solid var(--line);font-size:.88rem;color:var(--mute)}
+.ask-box b{display:block;color:var(--ink);font-family:var(--serif);font-weight:500;font-size:1.15rem;margin-bottom:4px}
+.ask-box button{margin-top:12px}
+.more-posts{padding:clamp(70px,9vw,110px) 0;background:var(--bg2)}
+.more-posts .posts{padding-bottom:0}
+@media(max-width:980px){.post-hero{grid-template-columns:1fr}.post-hero figure{aspect-ratio:4/3}.post-wrap{grid-template-columns:1fr}.aside{position:static}}
+
+/* homepage teaser */
+#blog-teaser{padding:clamp(80px,10vw,130px) 0}
+#blog-teaser .posts{padding-bottom:0}
