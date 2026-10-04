@@ -515,3 +515,10 @@ footer .copy{flex-basis:100%;order:9;margin-top:6px;padding-top:16px;border-top:
 .fest-insp figure:hover img{transform:scale(1.04)}
 .fest-insp figcaption{position:absolute;left:12px;bottom:10px;font-size:.7rem;padding:.3em .85em;border-radius:999px;background:rgba(var(--sf),.8);color:var(--ink);backdrop-filter:blur(6px)}
 @media(max-width:860px){.fest-insp{grid-template-columns:1fr 1fr}.fest-insp-head{grid-column:span 2}}
+.an-device{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:center;margin-top:26px;padding:16px;border-radius:18px;border:1px solid var(--line);background:rgba(var(--inkc),.03)}
+.an-device figure{border-radius:12px;overflow:hidden;background:#fff;aspect-ratio:1}
+.an-device img{width:100%;height:100%;object-fit:contain}
+.an-device b{font-family:var(--serif);font-weight:500;font-size:1.3rem}
+.an-device p{color:var(--mute);font-size:.9rem;margin-top:4px}
+.an-device small{display:block;font-size:.66rem;color:var(--dim);margin-top:6px;letter-spacing:.04em}
+@media(max-width:480px){.an-device{grid-template-columns:96px 1fr;gap:14px}}
