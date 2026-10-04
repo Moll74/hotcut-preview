@@ -299,19 +299,33 @@ function paintQs() {
   }, bq.children.length ? 250 : 0);
 }
 function hideGreet() { greet.classList.remove('show'); setTimeout(() => { if (!greet.classList.contains('show')) greet.hidden = true; }, 350); }
+const isPhone = () => matchMedia('(max-width: 760px)').matches;
+function nudgePhone() {                            // phones: no pop-up over the content, the "Spørg AI" button rocks instead
+  const el = document.querySelector('.dock-chat');
+  if (!el || !panel.hidden || document.documentElement.classList.contains('menu-open')) return;
+  el.classList.remove('wiggle'); void el.offsetWidth; el.classList.add('wiggle');
+}
 function showGreet() {
+  if (isPhone()) { nudgePhone(); return; }
   if (!panel.hidden || document.documentElement.classList.contains('menu-open') || Date.now() < snoozeUntil) return;
   if (!greet.classList.contains('show')) {
     if (!bq.children.length) paintQs();
     greet.hidden = false; requestAnimationFrame(() => greet.classList.add('show'));
     [fab, document.querySelector('.dock-chat')].forEach(el => { if (!el) return; el.classList.remove('wiggle'); void el.offsetWidth; el.classList.add('wiggle'); });
     track('chat_bubble_shown');
+    clearTimeout(window.__hcHide); window.__hcHide = setTimeout(() => { if (!greet.matches(':hover')) hideGreet(); }, 9000);
   }
 }
 greet.querySelector('.hc-bx').addEventListener('click', () => { hideGreet(); snoozeUntil = Date.now() + 120000; track('chat_bubble_closed'); });
 greet.querySelector('.hc-bopen').addEventListener('click', () => { toggle(true); track('chat_bubble_opened'); });
+greet.addEventListener('mouseleave', () => { clearTimeout(window.__hcHide); window.__hcHide = setTimeout(hideGreet, 3000); });
 setTimeout(showGreet, 1500);                       // first thing a visitor sees
 setInterval(() => { if (greet.classList.contains('show') && !greet.matches(':hover')) paintQs(); }, 10000);
-setInterval(showGreet, 15000);                     // comes back after the chat is closed or the snooze ends
+setInterval(showGreet, 45000);                     // desktop: the bubble comes back now and then
+setInterval(() => {                                // between bubbles the labelled button rocks gently
+  if (isPhone() || !panel.hidden || greet.classList.contains('show')) return;
+  fab.classList.remove('wiggle'); void fab.offsetWidth; fab.classList.add('wiggle');
+}, 8000);
+setInterval(() => { if (isPhone()) nudgePhone(); }, 8000);   // keep the phone button gently alive
 window.hcAssistant = { answer: q => { const e = answer(q); return e.id || 'fallback'; }, open: () => toggle(true), greet: showGreet };
 })();
