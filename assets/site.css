@@ -530,25 +530,41 @@ footer .copy{flex-basis:100%;order:9;margin-top:6px;padding-top:16px;border-top:
 @media(max-width:860px){.ext-inset{right:-6px;bottom:-24px;width:46%}}
 @media(max-width:480px){.ext-inset{position:relative;right:auto;bottom:auto;width:70%;margin:-60px 0 0 auto}}
 
-/* proactive greeting card */
-.hc-greet{position:absolute;right:0;bottom:78px;width:320px;padding:16px 16px 14px;border-radius:18px 18px 4px 18px;background:rgba(var(--sf),.97);border:1px solid var(--line);backdrop-filter:blur(14px);box-shadow:0 26px 60px -18px rgba(0,0,0,.55);opacity:0;transform:translateY(10px) scale(.98);transform-origin:bottom right;transition:opacity .35s,transform .35s cubic-bezier(.2,.8,.2,1)}
-.hc-greet.show{opacity:1;transform:none}
-.hc-greet[hidden]{display:none}
-.hc-gx{position:absolute;right:10px;top:10px;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--mute);cursor:pointer;font-size:.75rem}
-.hc-g-head{display:flex;align-items:center;gap:10px;padding-right:30px}
-.hc-g-head .hc-ava{width:34px;height:34px}
-.hc-g-head .hc-ava svg{width:19px;height:19px}
-.hc-g-head b{display:block;font-family:var(--serif);font-weight:500;font-size:1.05rem;line-height:1.1}
-.hc-g-head small{font-size:.7rem;color:var(--mute)}
-.hc-g-head small i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-right:5px}
-.hc-greet p{font-size:.88rem;line-height:1.5;margin:10px 0 12px;color:var(--ink2);cursor:pointer}
-.hc-g-q{display:flex;flex-direction:column;gap:6px}
-.hc-g-q button{text-align:left;font:inherit;font-size:.82rem;padding:.6em .9em;border-radius:12px;border:1px solid rgba(224,176,161,.4);background:rgba(var(--inkc),.03);color:var(--ink);cursor:pointer;transition:border-color .2s,background .2s}
-.hc-g-q button:hover{border-color:var(--rose);background:rgba(181,129,114,.12)}
-html.chat-open .hc-greet{display:none}
+/* small speech bubble from the chat button */
+.hc-bubble{position:absolute;right:2px;bottom:86px;display:flex;align-items:flex-start;gap:4px;padding:10px 8px 10px 14px;border-radius:16px;background:var(--ink);color:var(--bg);box-shadow:0 14px 34px -10px rgba(0,0,0,.45);opacity:0;transform:translateY(8px) scale(.94);transform-origin:bottom right;transition:opacity .3s,transform .35s cubic-bezier(.2,1.4,.4,1);white-space:nowrap}
+.hc-bubble.show{opacity:1;transform:none}
+.hc-bubble[hidden]{display:none}
+.hc-bubble::after{content:"";position:absolute;right:24px;bottom:-6px;width:12px;height:12px;background:var(--ink);transform:rotate(45deg);border-radius:2px}
+.hc-bopen{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left;line-height:1.25;padding:0}
+.hc-bopen b{display:block;font-size:.88rem;font-weight:600}
+.hc-bopen small{display:block;font-size:.72rem;opacity:.75}
+.hc-bx{width:22px;height:22px;border-radius:50%;border:0;background:rgba(127,127,127,.25);color:inherit;cursor:pointer;font-size:.62rem;line-height:1;flex:none}
+html.chat-open .hc-bubble,html.menu-open .hc-bubble{display:none}
 @media(max-width:760px){
   .hc-chat{right:0;bottom:0}
-  .hc-greet{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));width:auto;border-radius:18px}
+  /* sits over the "Spørg" button in the bottom bar (2nd of 3 columns: 1fr 1fr 1.7fr) */
+  .hc-bubble{position:fixed;right:auto;left:calc(22px + 1.5 * (100vw - 44px) / 3.7);bottom:calc(76px + env(safe-area-inset-bottom));transform-origin:bottom center;translate:-50% 0}
+  .hc-bubble::after{right:auto;left:calc(50% - 6px)}
 }
 /* booking pill: compact on smaller desktops so it doesn't cover text */
-@media(max-width:1280px){.dock-d .st{display:none}.dock-d{padding:8px}}
+.dock-d .st{display:none}
+.dock-d{padding:8px}
+
+/* opening hours in the top menu */
+.dd-hours .dd-t{gap:6px;white-space:nowrap}
+.dd-hours .dd-t .js-open{display:inline-flex;align-items:center}
+.dd-hours .open-dot{width:7px;height:7px;margin-right:7px}
+.hours-m{left:auto;right:-18px;min-width:280px;padding:16px 16px 10px}
+.hm-title{display:block;font-family:var(--serif);font-weight:500;font-size:1.2rem;margin:0 0 6px 4px}
+.hm-list{list-style:none;margin:0 4px}
+.hm-list li{display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:.86rem;color:var(--mute)}
+.hm-list li.today{color:var(--ink);font-weight:500}
+.hm-list li.today span:first-child::before{content:"● ";color:var(--rose-l);font-size:.7em}
+.hm-addr{margin:12px 4px 4px;font-size:.84rem;color:var(--ink2)}
+.hm-links{display:flex;gap:6px;margin:6px 0 4px}
+.hm-links a{flex:1;white-space:nowrap;justify-content:center!important;text-align:center;border:1px solid var(--line);border-radius:999px;padding:8px 10px!important;font-size:.8rem!important}
+@media(max-width:1180px){.hdr-r .tel .tl{display:none}.mainnav{gap:20px}}
+
+/* gallery: blend in from the section above instead of a hard colour change */
+#gallery::before{content:"";position:absolute;left:0;right:0;top:0;height:28vh;background:linear-gradient(var(--bg2),transparent);z-index:1;pointer-events:none}
+.gal-title{z-index:3}

@@ -178,11 +178,9 @@ const root = document.createElement('div');
 root.className = 'hc-chat';
 root.innerHTML = `
   <button class="hc-fab" aria-label="Åbn Hot Cut AI-assistent" aria-expanded="false" aria-controls="hcPanel">${ICON}<span class="hc-badge">1</span></button>
-  <div class="hc-greet" role="dialog" aria-label="Besked fra Hot Cut AI-assistent" hidden>
-    <button class="hc-gx" type="button" aria-label="Luk beskeden">✕</button>
-    <div class="hc-g-head"><span class="hc-ava">${ICON}</span><div><b>Hot Cut AI-assistent</b><small><i></i>Svarer døgnet rundt</small></div></div>
-    <p>Hej! 👋 Har du et spørgsmål? Jeg svarer på priser, behandlinger og åbningstider, når det passer dig.</p>
-    <div class="hc-g-q"><button type="button">Hvad koster en dameklip?</button><button type="button">Hvad er en håranalyse?</button><button type="button">Hvornår har I åbent?</button></div>
+  <div class="hc-bubble" hidden>
+    <button class="hc-bopen" type="button" aria-label="Åbn Hot Cut AI-assistent"><b>Spørg mig døgnet rundt</b><small>om priser, behandlinger og produkter</small></button>
+    <button class="hc-bx" type="button" aria-label="Luk">✕</button>
   </div>
   <section class="hc-panel" id="hcPanel" role="dialog" aria-label="Hot Cut AI-assistent" hidden>
     <div class="hc-head">
@@ -197,7 +195,7 @@ root.innerHTML = `
   </section>`;
 document.body.appendChild(root);
 const fab = root.querySelector('.hc-fab'), panel = root.querySelector('.hc-panel'), log = root.querySelector('.hc-log'),
-      chips = root.querySelector('.hc-chips'), form = root.querySelector('.hc-form'), input = form.querySelector('input'), greet = root.querySelector('.hc-greet');
+      chips = root.querySelector('.hc-chips'), form = root.querySelector('.hc-form'), input = form.querySelector('input'), greet = root.querySelector('.hc-bubble');
 const track = (ev, extra = {}) => (window.dataLayer = window.dataLayer || []).push({ event: ev, ...extra });
 
 function bubble(html, who, actions = []) {
@@ -292,9 +290,8 @@ function showGreet() {
   try { sessionStorage.setItem('hc-greet', '1'); } catch (e) {}
   track('chat_greet_shown');
 }
-greet.querySelector('.hc-gx').addEventListener('click', () => { hideGreet(); track('chat_greet_closed'); });
-greet.querySelectorAll('.hc-g-q button').forEach(b => b.addEventListener('click', () => { toggle(true); reply(b.textContent); track('chat_greet_question', { q: b.textContent }); }));
-greet.querySelector('p').addEventListener('click', () => toggle(true));
-if (!seen) setTimeout(showGreet, innerWidth <= 760 ? 15000 : 10000);
+greet.querySelector('.hc-bx').addEventListener('click', () => { hideGreet(); track('chat_bubble_closed'); });
+greet.querySelector('.hc-bopen').addEventListener('click', () => { toggle(true); track('chat_bubble_opened'); });
+if (!seen) setTimeout(showGreet, innerWidth <= 760 ? 8000 : 5000);
 window.hcAssistant = { answer: q => { const e = answer(q); return e.id || 'fallback'; }, open: () => toggle(true), greet: showGreet };
 })();

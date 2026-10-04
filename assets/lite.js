@@ -24,6 +24,8 @@ function status() {
 }
 const st = status();
 document.querySelectorAll('.js-open').forEach(el => el.innerHTML = `<i class="open-dot${st.open ? '' : ' closed'}"></i>${st.t}`);
+const dNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Copenhagen' })).getDay();
+document.querySelectorAll('.hm-list [data-d]').forEach(el => el.classList.toggle('today', +el.dataset.d === dNow));
 
 /* theme toggle */
 $('#themeT')?.addEventListener('click', () => {
