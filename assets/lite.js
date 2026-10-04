@@ -13,14 +13,15 @@ document.addEventListener('click', e => {
 
 /* live opening status (Europe/Copenhagen) */
 const HOURS = { 1: ['09:00', '15:00'], 2: ['08:30', '17:00'], 3: ['08:30', '17:00'], 4: ['08:30', '19:00'], 5: ['08:30', '17:00'] };
-const DAYS = ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'];
+const EN = root.lang.startsWith('en');
+const DAYS = EN ? ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] : ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'];
 function status() {
   const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Copenhagen', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
     .formatToParts(new Date()).map(x => [x.type, x.value]));
   const d = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(p.weekday), m = (+p.hour % 24) * 60 + +p.minute;
   const mm = s => +s.slice(0, 2) * 60 + +s.slice(3), h = HOURS[d];
-  if (h && m >= mm(h[0]) && m < mm(h[1])) return { open: true, t: `Åben nu · til ${h[1]}` };
-  for (let i = 0; i < 8; i++) { const nd = (d + i) % 7, nh = HOURS[nd]; if (nh && (i > 0 || m < mm(nh[0]))) return { open: false, t: `Lukket · åbner ${i === 0 ? 'i dag' : i === 1 ? 'i morgen' : DAYS[nd]} ${nh[0]}` }; }
+  if (h && m >= mm(h[0]) && m < mm(h[1])) return { open: true, t: EN ? `Open now · until ${h[1]}` : `Åben nu · til ${h[1]}` };
+  for (let i = 0; i < 8; i++) { const nd = (d + i) % 7, nh = HOURS[nd]; if (nh && (i > 0 || m < mm(nh[0]))) return { open: false, t: EN ? `Closed · opens ${i === 0 ? 'today' : i === 1 ? 'tomorrow' : DAYS[nd]} ${nh[0]}` : `Lukket · åbner ${i === 0 ? 'i dag' : i === 1 ? 'i morgen' : DAYS[nd]} ${nh[0]}` }; }
 }
 const st = status();
 document.querySelectorAll('.js-open').forEach(el => el.innerHTML = `<i class="open-dot${st.open ? '' : ' closed'}"></i>${st.t}`);
