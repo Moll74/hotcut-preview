@@ -603,3 +603,12 @@ html.chat-open .hc-bubble,html.menu-open .hc-bubble{display:none}
 @keyframes hcRock{0%,100%{rotate:0deg;scale:1}15%{rotate:-6deg;scale:1.04}30%{rotate:5deg;scale:1.04}45%{rotate:-4deg}60%{rotate:3deg}75%{rotate:-1deg}}
 @keyframes hcPulse{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(1.6)}}
 @media (prefers-reduced-motion:reduce){.dock-chat.wiggle,.dock-chat .t247::after{animation:none}}
+/* language switch (DA | EN) in the top bar */
+.lang-sw{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:3px;font-size:.72rem;font-weight:600;letter-spacing:.04em}
+.lang-sw a{padding:.4em .65em;border-radius:999px;color:var(--mute);line-height:1}
+.lang-sw a:hover{color:var(--ink)}
+.lang-sw a[aria-current="true"]{background:var(--rose);color:#fff}
+.mnav-lang{display:flex;gap:8px;margin-top:16px}
+.mnav-lang a{flex:1;text-align:center;padding:10px;border:1px solid var(--line);border-radius:999px;font-size:.85rem}
+.mnav-lang a[aria-current="true"]{background:var(--rose);border-color:var(--rose);color:#fff}
+@media(max-width:560px){.lang-sw{font-size:.66rem}.lang-sw a{padding:.4em .5em}}
