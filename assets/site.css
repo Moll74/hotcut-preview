@@ -572,3 +572,26 @@ html.chat-open .hc-bubble,html.menu-open .hc-bubble{display:none}
 @keyframes hcWiggle{0%,100%{rotate:0deg}15%{rotate:-12deg}30%{rotate:10deg}45%{rotate:-7deg}60%{rotate:5deg}75%{rotate:-2deg}}
 @media(max-width:760px){.dock-chat.wiggle{animation:hcWiggle .9s ease}}
 @media (prefers-reduced-motion:reduce){.hc-fab.wiggle{animation:none}}
+
+/* make the assistant obvious: labelled button, arrival bubble with quick questions */
+.hc-fab{width:auto;height:58px;padding:0 20px 0 14px;border-radius:999px;display:flex;align-items:center;gap:10px}
+.hc-fab svg{width:28px;height:28px;flex:none}
+.hc-fab-l{display:flex;flex-direction:column;text-align:left;line-height:1.15}
+.hc-fab-l b{font-size:.9rem;font-weight:600}
+.hc-fab-l small{font-size:.7rem;opacity:.85}
+.hc-chat.open .hc-fab{transform:none}
+.hc-bubble{flex-direction:column;align-items:stretch;gap:10px;white-space:normal;width:300px;padding:14px 14px 12px 16px}
+.hc-btop{display:flex;align-items:flex-start;gap:8px}
+.hc-btop .hc-bopen{flex:1}
+.hc-bq{display:flex;flex-direction:column;gap:6px;transition:opacity .25s}
+.hc-bq.fade{opacity:0}
+.hc-bq button{text-align:left;font:inherit;font-size:.8rem;padding:.55em .85em;border-radius:12px;border:1px solid rgba(127,127,127,.35);background:rgba(127,127,127,.12);color:inherit;cursor:pointer;transition:background .2s,border-color .2s}
+.hc-bq button:hover{background:rgba(224,176,161,.25);border-color:var(--rose-l)}
+.hc-bubble::after{right:40px}
+.dock-chat{position:relative}
+.dock-chat .t247{position:absolute;top:-8px;right:-4px;font-style:normal;font-size:.58rem;font-weight:700;padding:2px 6px;border-radius:999px;background:var(--rose);color:#fff}
+.ai-link{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(224,176,161,.6);text-underline-offset:3px}
+.ai-link:hover{color:var(--rose-l)}
+@media(max-width:760px){.hc-bubble{width:min(300px,calc(100vw - 24px));left:50%!important;translate:-50% 0}.hc-bubble::after{left:calc(50% - 6px)}}
+.dock-d{right:200px}
+@media(max-width:760px){.hc-fab{display:none!important}.hc-bq{display:none}.hc-bubble{gap:0;padding:12px 12px 12px 14px}}

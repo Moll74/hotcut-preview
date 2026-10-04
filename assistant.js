@@ -177,10 +177,11 @@ const ICON = `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 7.5A3.5 3.
 const root = document.createElement('div');
 root.className = 'hc-chat';
 root.innerHTML = `
-  <button class="hc-fab" aria-label="Åbn Hot Cut AI-assistent" aria-expanded="false" aria-controls="hcPanel">${ICON}<span class="hc-badge">1</span></button>
+  <button class="hc-fab" aria-label="Åbn Hot Cut AI-assistent" aria-expanded="false" aria-controls="hcPanel">${ICON}<span class="hc-fab-l"><b>AI-assistent</b><small>Svarer 24/7</small></span><span class="hc-badge">1</span></button>
   <div class="hc-bubble" hidden>
-    <button class="hc-bopen" type="button" aria-label="Åbn Hot Cut AI-assistent"><b>Hej, jeg er din AI-assistent 👋</b><small>Jeg er her 24/7, hvis du har spørgsmål</small></button>
-    <button class="hc-bx" type="button" aria-label="Luk">✕</button>
+    <div class="hc-btop"><button class="hc-bopen" type="button" aria-label="Åbn Hot Cut AI-assistent"><b>Hej, jeg er din AI-assistent 👋</b><small>Jeg er her 24/7, hvis du har spørgsmål</small></button>
+    <button class="hc-bx" type="button" aria-label="Luk">✕</button></div>
+    <div class="hc-bq"></div>
   </div>
   <section class="hc-panel" id="hcPanel" role="dialog" aria-label="Hot Cut AI-assistent" hidden>
     <div class="hc-head">
@@ -281,31 +282,36 @@ function toggle(open) {
 fab.addEventListener('click', () => toggle(panel.hidden));
 root.querySelector('.hc-x').addEventListener('click', () => toggle(false));
 addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
-/* recurring speech bubble: pops up regularly while the chat is closed, rotating short messages */
-const MAIN = ['Hej, jeg er din AI-assistent 👋', 'Jeg er her 24/7, hvis du har spørgsmål'];
-const HINTS = [
-  ['Kan jeg hjælpe?', 'Fx med priser på klip og farve'],
-  ['Leder du efter et produkt?', 'Jeg hjælper gerne med at finde det rigtige'],
-  ['Overvejer du extensions?', 'Jeg fortæller gerne om priser og pleje'],
-  ['Hvornår har vi åbent?', 'Jeg hjælper gerne, døgnet rundt'],
+/* arrival bubble: comes up fast, stays until opened or closed, quick questions rotate */
+const QSETS = [
+  ['Hvad koster en dameklip?', 'Hvornår har I åbent?', 'Hvilke produkter har I?'],
+  ['Hvad koster balayage?', 'Hvad er en håranalyse?', 'Hvor ligger I?'],
+  ['Hvad koster extensions?', 'Laver I brudeopsætning?', 'Hvad koster en herreklip?'],
 ];
-const BUBBLES = HINTS.flatMap(h => [MAIN, h]);   // the main message every other time
-let bi = 0, snoozeUntil = 0, hideT;
-function hideGreet() { greet.classList.remove('show'); clearTimeout(hideT); setTimeout(() => { if (!greet.classList.contains('show')) greet.hidden = true; }, 350); }
+const bq = greet.querySelector('.hc-bq');
+let qi = 0, snoozeUntil = 0;
+function paintQs() {
+  bq.classList.add('fade');
+  setTimeout(() => {
+    bq.innerHTML = QSETS[qi++ % QSETS.length].map(q => `<button type="button">${q}</button>`).join('');
+    bq.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { toggle(true); reply(b.textContent); track('chat_bubble_question', { q: b.textContent }); }));
+    bq.classList.remove('fade');
+  }, bq.children.length ? 250 : 0);
+}
+function hideGreet() { greet.classList.remove('show'); setTimeout(() => { if (!greet.classList.contains('show')) greet.hidden = true; }, 350); }
 function showGreet() {
-  if (!panel.hidden || document.documentElement.classList.contains('menu-open') || Date.now() < snoozeUntil || document.hidden) return;
-  const [t, s] = BUBBLES[bi++ % BUBBLES.length];
-  greet.querySelector('.hc-bopen b').textContent = t; greet.querySelector('.hc-bopen small').textContent = s;
-  greet.hidden = false; requestAnimationFrame(() => greet.classList.add('show'));
-  [fab, document.querySelector('.dock-chat')].forEach(el => { if (!el) return; el.classList.remove('wiggle'); void el.offsetWidth; el.classList.add('wiggle'); });
-  clearTimeout(hideT); hideT = setTimeout(hideGreet, 7000);
-  track('chat_bubble_shown', { msg: t });
+  if (!panel.hidden || document.documentElement.classList.contains('menu-open') || Date.now() < snoozeUntil) return;
+  if (!greet.classList.contains('show')) {
+    if (!bq.children.length) paintQs();
+    greet.hidden = false; requestAnimationFrame(() => greet.classList.add('show'));
+    [fab, document.querySelector('.dock-chat')].forEach(el => { if (!el) return; el.classList.remove('wiggle'); void el.offsetWidth; el.classList.add('wiggle'); });
+    track('chat_bubble_shown');
+  }
 }
 greet.querySelector('.hc-bx').addEventListener('click', () => { hideGreet(); snoozeUntil = Date.now() + 120000; track('chat_bubble_closed'); });
-greet.querySelector('.hc-bopen').addEventListener('click', () => { toggle(true); track('chat_bubble_opened', { msg: greet.querySelector('.hc-bopen b').textContent }); });
-greet.addEventListener('mouseenter', () => clearTimeout(hideT));
-greet.addEventListener('mouseleave', () => { hideT = setTimeout(hideGreet, 3000); });
-setTimeout(showGreet, 4000);
-setInterval(showGreet, 30000);
+greet.querySelector('.hc-bopen').addEventListener('click', () => { toggle(true); track('chat_bubble_opened'); });
+setTimeout(showGreet, 1500);                       // first thing a visitor sees
+setInterval(() => { if (greet.classList.contains('show') && !greet.matches(':hover')) paintQs(); }, 10000);
+setInterval(showGreet, 15000);                     // comes back after the chat is closed or the snooze ends
 window.hcAssistant = { answer: q => { const e = answer(q); return e.id || 'fallback'; }, open: () => toggle(true), greet: showGreet };
 })();
