@@ -79,3 +79,14 @@
 /* homepage teaser */
 #blog-teaser{padding:clamp(80px,10vw,130px) 0}
 #blog-teaser .posts{padding-bottom:0}
+
+/* every post card the same size: fixed image ratio, clamped text, link pinned to the bottom */
+.posts{grid-template-columns:repeat(3,1fr);align-items:stretch}
+.post-card,.post-card.half,.post-card.feature{grid-column:auto;flex-direction:column}
+.post-card .pc-img,.post-card.feature .pc-img{flex:none;aspect-ratio:4/3;min-height:0}
+.post-card.feature .pc-body{padding:24px 24px 26px;justify-content:flex-start}
+.pc-body h2,.pc-body h3,.post-card.feature h2{font-size:1.55rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pc-body p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+@media(max-width:980px){.posts{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.posts{grid-template-columns:1fr}}
+.posts{grid-auto-rows:1fr}
