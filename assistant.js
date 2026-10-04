@@ -178,7 +178,12 @@ const root = document.createElement('div');
 root.className = 'hc-chat';
 root.innerHTML = `
   <button class="hc-fab" aria-label="Åbn Hot Cut AI-assistent" aria-expanded="false" aria-controls="hcPanel">${ICON}<span class="hc-badge">1</span></button>
-  <div class="hc-tip" role="status">Spørg vores AI-assistent ✨</div>
+  <div class="hc-greet" role="dialog" aria-label="Besked fra Hot Cut AI-assistent" hidden>
+    <button class="hc-gx" type="button" aria-label="Luk beskeden">✕</button>
+    <div class="hc-g-head"><span class="hc-ava">${ICON}</span><div><b>Hot Cut AI-assistent</b><small><i></i>Svarer døgnet rundt</small></div></div>
+    <p>Hej! 👋 Har du et spørgsmål? Jeg svarer på priser, behandlinger og åbningstider, når det passer dig.</p>
+    <div class="hc-g-q"><button type="button">Hvad koster en dameklip?</button><button type="button">Hvad er en håranalyse?</button><button type="button">Hvornår har I åbent?</button></div>
+  </div>
   <section class="hc-panel" id="hcPanel" role="dialog" aria-label="Hot Cut AI-assistent" hidden>
     <div class="hc-head">
       <div class="hc-ava">${ICON}</div>
@@ -192,7 +197,7 @@ root.innerHTML = `
   </section>`;
 document.body.appendChild(root);
 const fab = root.querySelector('.hc-fab'), panel = root.querySelector('.hc-panel'), log = root.querySelector('.hc-log'),
-      chips = root.querySelector('.hc-chips'), form = root.querySelector('.hc-form'), input = form.querySelector('input'), tip = root.querySelector('.hc-tip');
+      chips = root.querySelector('.hc-chips'), form = root.querySelector('.hc-form'), input = form.querySelector('input'), greet = root.querySelector('.hc-greet');
 const track = (ev, extra = {}) => (window.dataLayer = window.dataLayer || []).push({ event: ev, ...extra });
 
 function bubble(html, who, actions = []) {
@@ -266,7 +271,7 @@ let greeted = false;
 function toggle(open) {
   panel.hidden = !open; fab.setAttribute('aria-expanded', open); root.classList.toggle('open', open);
   if (!open) { rec && listening && rec.stop(); 'speechSynthesis' in window && speechSynthesis.cancel(); }
-  tip.classList.remove('show'); fab.querySelector('.hc-badge').style.display = 'none';
+  hideGreet(); fab.querySelector('.hc-badge').style.display = 'none';
   document.documentElement.classList.toggle('hc-lock', open && innerWidth <= 760);
   document.documentElement.classList.toggle('chat-open', open);
   if (open && !greeted) {
@@ -278,7 +283,18 @@ function toggle(open) {
 fab.addEventListener('click', () => toggle(panel.hidden));
 root.querySelector('.hc-x').addEventListener('click', () => toggle(false));
 addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
-setTimeout(() => { if (panel.hidden) tip.classList.add('show'); }, 9000);
-setTimeout(() => tip.classList.remove('show'), 17000);
-window.hcAssistant = { answer: q => { const e = answer(q); return e.id || 'fallback'; }, open: () => toggle(true) };
+/* proactive greeting: once per visit, after a short delay, never while the chat is open */
+const seen = (() => { try { return sessionStorage.getItem('hc-greet') === '1'; } catch (e) { return false; } })();
+function hideGreet() { greet.classList.remove('show'); setTimeout(() => { greet.hidden = true; }, 350); }
+function showGreet() {
+  if (!panel.hidden || document.documentElement.classList.contains('menu-open')) return;
+  greet.hidden = false; requestAnimationFrame(() => greet.classList.add('show'));
+  try { sessionStorage.setItem('hc-greet', '1'); } catch (e) {}
+  track('chat_greet_shown');
+}
+greet.querySelector('.hc-gx').addEventListener('click', () => { hideGreet(); track('chat_greet_closed'); });
+greet.querySelectorAll('.hc-g-q button').forEach(b => b.addEventListener('click', () => { toggle(true); reply(b.textContent); track('chat_greet_question', { q: b.textContent }); }));
+greet.querySelector('p').addEventListener('click', () => toggle(true));
+if (!seen) setTimeout(showGreet, innerWidth <= 760 ? 15000 : 10000);
+window.hcAssistant = { answer: q => { const e = answer(q); return e.id || 'fallback'; }, open: () => toggle(true), greet: showGreet };
 })();
