@@ -612,3 +612,7 @@ html.chat-open .hc-bubble,html.menu-open .hc-bubble{display:none}
 .mnav-lang a{flex:1;text-align:center;padding:10px;border:1px solid var(--line);border-radius:999px;font-size:.85rem}
 .mnav-lang a[aria-current="true"]{background:var(--rose);border-color:var(--rose);color:#fff}
 @media(max-width:560px){.lang-sw{font-size:.66rem}.lang-sw a{padding:.4em .5em}}
+.hc-bubble.mini{width:auto;max-width:300px}
+.hc-bubble.mini .hc-bq{display:none}
+.hc-bubble.mini{width:max-content;max-width:320px}
+.hc-bubble.mini .hc-bopen b,.hc-bubble.mini .hc-bopen small{white-space:nowrap}

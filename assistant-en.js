@@ -105,7 +105,7 @@ const KB = [
     a: `Brows and lashes:<table class="hc-t"><tr><td>Brow shaping (wax/tweezers)</td><td>DKK 100</td></tr><tr><td>Brow tint</td><td>DKK 100</td></tr><tr><td>Lash tint</td><td>DKK 150</td></tr><tr><td>Package: brows &amp; lashes tinted and shaped</td><td>DKK 300</td></tr><tr><td>Brow lamination without / with tint</td><td>DKK 450 / 500</td></tr></table>Lash lift is also available. The price isn't on the price list, so call to ask.`, act: ['book', 'call'] },
   { id: 'analysis', k: ['analysis', 'hair analysis', 'scalp analysis', 'analyse', 'analyze', 'voucher', 'product discount', 'discount on products', 'scalp', 'hair loss', 'losing hair', 'dandruff', 'dry hair', 'dry scalp', 'greasy', 'oily', 'itchy', 'itching', 'scanner', 'microscope', 'camera', 'machine', 'equipment', 'examine my hair', 'what does my hair need'],
     a: `We offer <b>hair and scalp analysis</b> with our special analysis equipment. A handheld camera with powerful magnification shows your scalp and hair strands on a screen, so you can see them for yourself. We explain what we see and give you specific advice on treatment and care. <br><br><b>The price is DKK 100</b>, and if you buy products for DKK 400, the DKK 100 is deducted. That's equivalent to a 25% discount on the products. The analysis can be combined with a haircut.`, act: [{ label: 'Book analysis', href: BOOK, primary: true }, 'call'] },
-  { id: 'brands', k: ['brands', 'which products', 'what products', 'which brands', 'what brands', 'products do you sell', 'products do you have', 'what do you sell', 'product range'],
+  { id: 'brands', k: ['right product', 'the right product', 'brands', 'which products', 'what products', 'which brands', 'what brands', 'products do you sell', 'products do you have', 'what do you sell', 'product range'],
     a: `We use and sell <b>Olaplex</b>, <b>Roze Avenue</b>, <b>Sanzi Beauty</b>, <b>Hairtalk</b>, <b>ghd</b> and <b>idHAIR</b>. If you'd like to know more about one of the brands or a specific product, just ask.<br><br>Tip: a hair analysis costs DKK 100, and the amount is deducted when you buy products for DKK 400.`, act: [{ label: 'See the products', href: '#produkter' }, 'call'] },
   { id: 'olaplex', k: ['olaplex', 'bond repair', 'bond', 'no.3', 'no3', 'hair perfector', 'no.4', 'bond maintenance', '4p', 'no.4p', 'purple shampoo', 'silver shampoo', 'yellow tones', 'yellow hair', 'brassy', 'brassiness', '4c', 'no.4c', 'clarifying', 'deep cleansing', 'no.7', 'oil', 'hair oil', 'bonding oil'],
     a: `<b>Olaplex</b> rebuilds the bonds in the hair that colouring, heat and sun break down. Olaplex is included in our colour treatments on medium and long hair. For use at home we have:<br>• <b>No.3 Hair Perfector</b>: a treatment applied to damp hair <i>before</i> shampoo and left on for at least 10 minutes.<br>• <b>No.4 Bond Maintenance</b>: a nourishing shampoo for all hair types.<br>• <b>No.4P Blonde Enhancer</b>: a purple toning shampoo that removes yellow and brassy tones in light hair.<br>• <b>No.4C Clarifying</b>: a deep-cleansing shampoo against product build-up, e.g. once a week.<br>• <b>The oil (No.7 Bonding Oil)</b>: shine and heat protection.<br><br>Ask us in the salon which combination suits your hair.`, act: [{ label: 'Olaplex.com', href: 'https://olaplex.com/' }, 'call'] },
@@ -284,50 +284,54 @@ function toggle(open) {
 fab.addEventListener('click', () => toggle(panel.hidden));
 root.querySelector('.hc-x').addEventListener('click', () => toggle(false));
 addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
-/* arrival bubble: comes up fast, stays until opened or closed, quick questions rotate */
+/* bubble rhythm (desktop): a short welcome with quick questions on arrival, then small one-line questions now and then */
 const QSETS = [
   ['How much is a women\'s cut?', 'When are you open?', 'Which products do you sell?'],
   ['How much is balayage?', 'What is a hair analysis?', 'Where are you?'],
   ['How much are extensions?', 'Do you do bridal hair?', 'How much is a men\'s cut?'],
 ];
-const bq = greet.querySelector('.hc-bq');
-let qi = 0, snoozeUntil = 0;
+const PINGS = ['Considering extensions?', "How much is a women's cut?", 'Wedding or confirmation coming up?', 'Tried our hair analysis?', 'Dreaming of balayage?', 'Looking for the right product?', 'When are you open?'];
+const PING_SUB = "Tap and I'll answer right away";
+const bq = greet.querySelector('.hc-bq'), bT = greet.querySelector('.hc-bopen b'), bS = greet.querySelector('.hc-bopen small');
+const MAIN_T = bT.textContent, MAIN_S = bS.textContent;
+let qi = 0, pi = 0, snoozeUntil = 0, mode = 'main';
 function paintQs() {
-  bq.classList.add('fade');
-  setTimeout(() => {
-    bq.innerHTML = QSETS[qi++ % QSETS.length].map(q => `<button type="button">${q}</button>`).join('');
-    bq.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { toggle(true); reply(b.textContent); track('chat_bubble_question', { q: b.textContent }); }));
-    bq.classList.remove('fade');
-  }, bq.children.length ? 250 : 0);
+  bq.innerHTML = QSETS[qi++ % QSETS.length].map(q => `<button type="button">${q}</button>`).join('');
+  bq.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { toggle(true); reply(b.textContent); track('chat_bubble_question', { q: b.textContent }); }));
 }
 function hideGreet() { greet.classList.remove('show'); setTimeout(() => { if (!greet.classList.contains('show')) greet.hidden = true; }, 350); }
 const isPhone = () => matchMedia('(max-width: 760px)').matches;
-function nudgePhone() {                            // phones: no pop-up over the content, the dock chat button rocks instead
+function nudgePhone() {                            // phones: no pop-up over the content, the chat button rocks instead
   const el = document.querySelector('.dock-chat');
   if (!el || !panel.hidden || document.documentElement.classList.contains('menu-open')) return;
   el.classList.remove('wiggle'); void el.offsetWidth; el.classList.add('wiggle');
 }
-function showGreet() {
+function popBubble(kind) {
   if (isPhone()) { nudgePhone(); return; }
-  if (!panel.hidden || document.documentElement.classList.contains('menu-open') || Date.now() < snoozeUntil) return;
-  if (!greet.classList.contains('show')) {
-    if (!bq.children.length) paintQs();
-    greet.hidden = false; requestAnimationFrame(() => greet.classList.add('show'));
-    [fab, document.querySelector('.dock-chat')].forEach(el => { if (!el) return; el.classList.remove('wiggle'); void el.offsetWidth; el.classList.add('wiggle'); });
-    track('chat_bubble_shown');
-    clearTimeout(window.__hcHide); window.__hcHide = setTimeout(() => { if (!greet.matches(':hover')) hideGreet(); }, 9000);
-  }
+  if (!panel.hidden || document.documentElement.classList.contains('menu-open') || Date.now() < snoozeUntil || greet.classList.contains('show')) return;
+  mode = kind;
+  if (kind === 'main') { bT.textContent = MAIN_T; bS.textContent = MAIN_S; paintQs(); greet.classList.remove('mini'); }
+  else { bT.textContent = PINGS[pi++ % PINGS.length]; bS.textContent = PING_SUB; greet.classList.add('mini'); }
+  greet.hidden = false; requestAnimationFrame(() => greet.classList.add('show'));
+  fab.classList.remove('wiggle'); void fab.offsetWidth; fab.classList.add('wiggle');
+  track('chat_bubble_shown', { kind, msg: bT.textContent });
+  clearTimeout(window.__hcHide);
+  window.__hcHide = setTimeout(() => { if (!greet.matches(':hover')) hideGreet(); }, kind === 'main' ? 5500 : 4500);
 }
+function showGreet() { popBubble('main'); }
 greet.querySelector('.hc-bx').addEventListener('click', () => { hideGreet(); snoozeUntil = Date.now() + 120000; track('chat_bubble_closed'); });
-greet.querySelector('.hc-bopen').addEventListener('click', () => { toggle(true); track('chat_bubble_opened'); });
-greet.addEventListener('mouseleave', () => { clearTimeout(window.__hcHide); window.__hcHide = setTimeout(hideGreet, 3000); });
-setTimeout(showGreet, 1500);                       // first thing a visitor sees
-setInterval(() => { if (greet.classList.contains('show') && !greet.matches(':hover')) paintQs(); }, 10000);
-setInterval(showGreet, 45000);                     // desktop: the bubble comes back now and then
-setInterval(() => {                                // between bubbles the labelled button rocks gently
+greet.querySelector('.hc-bopen').addEventListener('click', () => {
+  toggle(true);
+  if (mode === 'ping') reply(bT.textContent);         // a question bubble asks its own question
+  track('chat_bubble_opened', { kind: mode, msg: bT.textContent });
+});
+greet.addEventListener('mouseleave', () => { clearTimeout(window.__hcHide); window.__hcHide = setTimeout(hideGreet, 2000); });
+setTimeout(() => popBubble('main'), 1500);          // first thing a visitor sees, briefly
+setInterval(() => popBubble('ping'), 25000);        // then a small question now and then
+setInterval(() => {                                // the labelled button rocks gently in between
   if (isPhone() || !panel.hidden || greet.classList.contains('show')) return;
   fab.classList.remove('wiggle'); void fab.offsetWidth; fab.classList.add('wiggle');
 }, 8000);
 setInterval(() => { if (isPhone()) nudgePhone(); }, 8000);   // keep the phone button gently alive
-window.hcAssistant = { answer: q => { const e = answer(q); return e.id || 'fallback'; }, open: () => toggle(true), greet: showGreet };
+window.hcAssistant = { answer: q => { const e = answer(q); return e.id || 'fallback'; }, open: () => toggle(true), greet: showGreet, ping: () => popBubble('ping') };
 })();
