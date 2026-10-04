@@ -38,9 +38,8 @@ const setMenu = open => { mnav.hidden = !open; root.classList.toggle('menu-open'
 burger?.addEventListener('click', () => setMenu(mnav.hidden));
 mnav?.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
 
-/* Behandlinger dropdown */
-const dd = $('#dd');
-if (dd) {
+/* menu dropdowns */
+document.querySelectorAll('.mainnav .dd').forEach(dd => {
   const t = dd.querySelector('.dd-t'), set = o => { dd.classList.toggle('open', o); t.setAttribute('aria-expanded', o); };
   const hover = () => matchMedia('(hover: hover)').matches;
   t.addEventListener('click', () => set(hover() ? true : !dd.classList.contains('open')));
@@ -48,8 +47,9 @@ if (dd) {
   dd.addEventListener('mouseleave', () => hover() && set(false));
   dd.addEventListener('focusout', e => { if (!dd.contains(e.relatedTarget)) set(false); });
   document.addEventListener('click', e => { if (!dd.contains(e.target)) set(false); });
-}
-addEventListener('keydown', e => { if (e.key === 'Escape') { setMenu?.(false); dd?.classList.remove('open'); } });
+  addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
+});
+addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
 
 /* header + booking bar on scroll */
 const hdr = $('#hdr'), docks = document.querySelectorAll('.dock'), mobile = () => matchMedia('(max-width: 760px)').matches;
