@@ -453,3 +453,28 @@ html.chat-open .dock{opacity:0;pointer-events:none}
 html.theme-anim *{transition:background-color .5s,color .5s,border-color .5s!important}
 
 footer .copy{flex-basis:100%;order:9;margin-top:6px;padding-top:16px;border-top:1px solid var(--line);font-size:.72rem;line-height:1.6;color:var(--dim)}
+
+/* opsætning, bryllup & konfirmation */
+#fest{padding:clamp(90px,12vw,150px) 0;background:var(--bg2)}
+.fest-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:clamp(36px,6vw,90px);align-items:start}
+.fest-grid > *{min-width:0}
+.fest-copy > p{color:var(--mute);max-width:46ch;margin-top:18px}
+.fest-steps{list-style:none;counter-reset:f;margin-top:26px}
+.fest-steps li{counter-increment:f;display:grid;grid-template-columns:44px 1fr;column-gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+.fest-steps li::before{content:"0" counter(f);grid-row:span 2;font-family:var(--serif);font-size:1.6rem;color:var(--rose-l);line-height:1}
+.fest-steps b{font-weight:500}
+.fest-steps span{color:var(--mute);font-size:.9rem}
+.fest-prices{list-style:none;margin-top:24px;padding:18px 20px;border-radius:16px;border:1px solid var(--line);background:rgba(var(--inkc),.03)}
+.fest-prices li{display:flex;justify-content:space-between;gap:14px;padding:6px 0;font-size:.92rem;border-bottom:1px dashed var(--line)}
+.fest-prices li:last-child{border-bottom:0}
+.fest-prices li span:last-child{white-space:nowrap;color:var(--ink)}
+.fest-note{font-size:.84rem!important;color:var(--dim)!important;margin-top:12px!important}
+.fest-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.fest-mosaic{display:grid;grid-template-columns:1.15fr 1fr 1fr;grid-template-rows:repeat(2,1fr);gap:14px;position:sticky;top:96px}
+.fest-mosaic figure{position:relative;border-radius:18px;overflow:hidden;background:#000;aspect-ratio:1}
+.fest-mosaic figure.tall{grid-row:span 2;aspect-ratio:auto}
+.fest-mosaic img{width:100%;height:100%;object-fit:cover;transition:transform .8s}
+.fest-mosaic figure:hover img{transform:scale(1.04)}
+.fest-mosaic figcaption{position:absolute;left:12px;bottom:10px;font-size:.74rem;padding:.3em .85em;border-radius:999px;background:rgba(var(--sf),.78);color:var(--ink);backdrop-filter:blur(6px)}
+@media(max-width:980px){.fest-grid{grid-template-columns:1fr}.fest-mosaic{position:static;order:-1}}
+@media(max-width:600px){.fest-mosaic{grid-template-columns:1fr 1fr;grid-template-rows:auto}.fest-mosaic figure.tall{grid-column:span 2;grid-row:auto;aspect-ratio:4/5}}
