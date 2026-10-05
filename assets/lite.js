@@ -35,6 +35,15 @@ $('#themeT')?.addEventListener('click', () => {
   setTimeout(() => root.classList.remove('theme-anim'), 600);
 });
 
+/* the stylists' faces in the header lead to the team section on the homepage */
+document.querySelectorAll('.hdr-r .tel .faces').forEach(fc => {
+  fc.title = EN ? 'Meet the team' : 'Mød teamet';
+  fc.addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation();
+    location.href = $('#hdr > a').getAttribute('href').replace(/#.*$/, '') + '#team';
+  });
+});
+
 /* mobile menu */
 const burger = $('#burger'), mnav = $('#mnav');
 const setMenu = open => { mnav.hidden = !open; root.classList.toggle('menu-open', open); burger.setAttribute('aria-expanded', open); };

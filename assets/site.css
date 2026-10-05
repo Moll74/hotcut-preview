@@ -674,3 +674,10 @@ footer .legal a:hover,footer .legal button:hover{color:var(--rose-l);border-colo
 .legal-page th{color:var(--ink);font-weight:500}
 .legal-page code{font-size:.85em;padding:.1em .4em;border-radius:6px;background:rgba(var(--inkc),.07)}
 @media(max-width:560px){.legal-page dl{grid-template-columns:1fr;gap:0}.legal-page dd{margin-bottom:8px}}
+
+/* header faces: link to the team */
+.hdr-r .tel .faces{cursor:pointer;transition:transform .25s}
+.hdr-r .tel .faces:hover{transform:translateY(-2px)}
+.hdr-r .tel .faces img{transition:margin .25s}
+.hdr-r .tel .faces:hover img{margin-left:-4px}
+.hdr-r .tel .faces:hover img:first-child{margin-left:0}
