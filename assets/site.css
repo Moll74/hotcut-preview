@@ -971,3 +971,7 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
 @media(max-width:1280px){.dd-hours .dd-t{max-width:150px}.dd-hours .dd-t .js-open{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}}
 /* the menu has grown (Priser/Blog/Spørgsmål dropdowns): switch to the burger menu below 1140px instead of 980px */
 @media(max-width:1140px){.mainnav{display:none}.burger{display:flex}}
+
+/* the floating booking pill + AI button sit bottom-right: keep the footer's last lines above them */
+footer{padding-bottom:120px}
+@media(max-width:760px){footer{padding-bottom:44px}}   /* phones: body already reserves room for the bottom bar */
