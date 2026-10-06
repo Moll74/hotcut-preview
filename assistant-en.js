@@ -44,7 +44,7 @@ const KB = [
   { id: 'address', k: ['address', 'where are you', 'where is the salon', 'where is hot cut', 'find you', 'location', 'located', 'søndergade', 'directions', 'how do i get there', 'city centre', 'city center', 'pedestrian street', 'map'],
     a: `You'll find us at <b>Søndergade 12, 7400 Herning</b>, in the centre of town. It's easy to combine with a stroll down the pedestrian street or a visit to a café.`, act: ['map', 'book'] },
   { id: 'parking', k: ['parking', 'car park', 'parking space', 'car'],
-    a: `Unfortunately the website doesn't say anything about parking. Call the salon on 97 12 60 60 and they'll help you find the easiest place to park near Søndergade 12.`, act: ['call', 'map'] },
+    a: `The salon is in central Herning, where there are several public parking options. Call +45 97 12 60 60 and we will tell you where it is easiest to park near Søndergade 12.`, act: ['call', 'map'] },
   { id: 'contact', k: ['phone', 'phone number', 'telephone', 'number', 'call', 'ring', 'mail', 'email', 'e-mail', 'contact', 'get in touch', 'write'],
     a: `You can reach Hot Cut on:<br>📞 <b>97 12 60 60</b><br>✉️ <b>info@hotcut.dk</b><br>📍 Søndergade 12, 7400 Herning`, act: ['call', 'mail'] },
   { id: 'book', base: true, k: ['book', 'appointment', 'reserve', 'reservation', 'available', 'availability', 'time slot', 'free slot', 'online', 'schedule'],
@@ -144,6 +144,10 @@ const KB = [
   { id: 'thanks', k: ['thanks', 'thank you', 'thx', 'many thanks', 'perfect', 'cheers', 'awesome'],
     a: `You're welcome! We look forward to seeing you in the salon. ✂️`, act: ['book'] },
 ];
+/* ---------- FAQ fallback: the full FAQ (assets/faq-en.js, 91 answers) covers what the topics above don't ---------- */
+const FAQ_SRC = ((document.currentScript && document.currentScript.src) || '').replace(/assistant(-en)?\.js.*$/, 'assets/faq-en.js');
+if (FAQ_SRC && !window.HC_FAQ) { const sc = document.createElement('script'); sc.src = FAQ_SRC; sc.async = true; document.head.appendChild(sc); }
+const FAQ_STOP = new Set('i you we the a an is are do does to and or on in at for of about what where how when who which can i my your have has it that this there not also so will should get me'.split(' '));
 const FALLBACK = { a: `Unfortunately I can't answer that reliably from the website. Call the salon on <b>97 12 60 60</b> or write to info@hotcut.dk and you'll get an accurate answer.`, act: ['call', 'mail'] };
 const CHIPS = ['Prices', 'Opening hours', 'Book a time', 'Hair analysis', 'Which products do you sell?', 'Extensions', 'Balayage', 'Men\'s cut', 'Where are you?'];
 
@@ -152,6 +156,24 @@ const norm = s => s.toLowerCase().normalize('NFC').replace(/[^\p{L}\p{N}\s-]/gu,
 const stem = w => w.length > 4 ? w.replace(/(ing|ies|es|s|ed)$/, '') : w;
 // common English words that must not trigger a prefix match ("make" -> "makeup", "hair" -> "hairband")
 const STOP = new Set(['what', 'when', 'where', 'which', 'have', 'does', 'make', 'much', 'long', 'with', 'your', 'there', 'about', 'would', 'like', 'want', 'need', 'take', 'this', 'that', 'from', 'they', 'them', 'tell', 'know', 'help', 'will', 'some', 'more', 'many', 'also', 'just', 'then', 'than', 'here', 'could', 'should', 'been', 'were', 'hair', 'good', 'very', 'into', 'over', 'cost']);
+function faqMatch(q) {
+  const list = window.HC_FAQ; if (!list) return null;
+  const words = s => norm(s).split(' ').filter(w => w.length > 2 && !FAQ_STOP.has(w)).map(stem);
+  const qt = [...new Set(words(q))]; if (!qt.length) return null;
+  let best = null;
+  for (const it of list) {
+    const qw = it._q || (it._q = words(it.q)), aw = it._a || (it._a = new Set(words(it.a)));
+    let sc = 0, hit = 0;
+    for (const w of qt) {
+      if (qw.includes(w)) { sc += 3; hit++; }
+      else if (w.length >= 4 && qw.some(x => x.length >= 4 && (x.startsWith(w) || w.startsWith(x)))) { sc += 2; hit++; }
+      else if (aw.has(w)) sc += 1;
+    }
+    if (hit / qt.length >= .5 && (!best || sc > best.sc)) best = { sc, it, cov: hit / qt.length };
+  }
+  return best && best.sc >= 4 ? best : null;
+}
+const esc = t => t.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
 function answer(q) {
   const t = ' ' + norm(q) + ' ', toks = norm(q).split(' ').filter(Boolean).map(stem);
   const scored = KB.map(e => {
@@ -167,7 +189,12 @@ function answer(q) {
     }
     return { e, sc };
   }).filter(x => x.sc >= 2).sort((a, b) => b.sc - a.sc);
-  if (!scored.length) return FALLBACK;
+  const fq = faqMatch(q), faqE = fq && { id: 'faq', a: esc(fq.it.a), act: ['book'] };
+  // the topics above win; the FAQ answers when nothing matched, or when it matches clearly better than a weak, generic topic
+  if (!scored.length) return faqE || FALLBACK;
+  if (faqE && scored[0].sc <= 3 && fq.sc >= scored[0].sc + 3) return faqE;
+  // a precise question ("kan I dække grå hår?") gets the precise FAQ answer rather than a topic overview; price questions keep the price lists
+  if (faqE && fq.cov === 1 && fq.sc >= 6 && !/\b(cost|costs|price|prices|much)\b/.test(norm(q))) return faqE;
   // generic topics (prices, extensions, booking) give way to a specific answer when one matched
   const specific = scored.find(x => !x.e.base);
   const topic = scored.find(x => x.e.id !== 'prices');           // e.g. "how much are extensions" -> extensions

@@ -44,7 +44,7 @@ const KB = [
   { id: 'address', k: ['adresse', 'hvor ligger', 'hvor er i', 'find jer', 'finde jer', 'søndergade', 'beliggenhed', 'rutevejledning', 'kørselsvejledning', 'centrum', 'gågade', 'vej'],
     a: `Du finder os på <b>Søndergade 12, 7400 Herning</b>, centralt i byen. Det er nemt at kombinere med en tur i gågaden eller på café.`, act: ['map', 'book'] },
   { id: 'parking', k: ['parkering', 'parkere', 'p-plads', 'bil', 'holde'],
-    a: `Parkering står der desværre ikke noget om på hjemmesiden. Ring til salonen på 97 12 60 60, så hjælper de dig med det nemmeste sted at parkere ved Søndergade 12.`, act: ['call', 'map'] },
+    a: `Salonen ligger i Herning midtby, hvor der er flere offentlige parkeringsmuligheder. Ring gerne på 97 12 60 60, så fortæller vi, hvor det er nemmest at parkere ved Søndergade 12.`, act: ['call', 'map'] },
   { id: 'contact', k: ['telefon', 'telefonnummer', 'nummer', 'ringe', 'ring', 'mail', 'email', 'e-mail', 'kontakt', 'kontakte', 'skrive'],
     a: `Du kan kontakte Hot Cut på:<br>📞 <b>97 12 60 60</b><br>✉️ <b>info@hotcut.dk</b><br>📍 Søndergade 12, 7400 Herning`, act: ['call', 'mail'] },
   { id: 'book', base: true, k: ['book', 'booke', 'booking', 'bestil', 'bestille', 'ledig', 'ledige', 'tid', 'aftale', 'reservere', 'online'],
@@ -144,12 +144,34 @@ const KB = [
   { id: 'thanks', k: ['tak', 'tusind tak', 'mange tak', 'super', 'perfekt', 'fedt'],
     a: `Så lidt! Vi glæder os til at se dig i salonen. ✂️`, act: ['book'] },
 ];
+/* ---------- FAQ fallback: the full FAQ (assets/faq-da.js, 91 answers) covers what the topics above don't ---------- */
+const FAQ_SRC = ((document.currentScript && document.currentScript.src) || '').replace(/assistant(-en)?\.js.*$/, 'assets/faq-da.js');
+if (FAQ_SRC && !window.HC_FAQ) { const sc = document.createElement('script'); sc.src = FAQ_SRC; sc.async = true; document.head.appendChild(sc); }
+const FAQ_STOP = new Set('jeg i du vi de det den en et er at og eller på til med for af om hvad hvor hvordan hvornår hvem hvilke hvilken kan man har have mit min mine jeres jer det der som ikke også så når skal må vil gør får'.split(' '));
 const FALLBACK = { a: `Det kan jeg desværre ikke svare sikkert på ud fra hjemmesiden. Ring til salonen på <b>97 12 60 60</b> eller skriv til info@hotcut.dk, så får du et præcist svar.`, act: ['call', 'mail'] };
 const CHIPS = ['Priser', 'Åbningstider', 'Book tid', 'Håranalyse', 'Hvilke produkter sælger I?', 'Extensions', 'Balayage', 'Herreklip', 'Hvor ligger I?'];
 
 /* ---------- matching ---------- */
 const norm = s => s.toLowerCase().normalize('NFC').replace(/[^\p{L}\p{N}\s-]/gu, ' ').replace(/\s+/g, ' ').trim();
 const stem = w => w.length > 5 ? w.replace(/(erne|ene|ers|er|en|et|e|s)$/, '') : w;
+function faqMatch(q) {
+  const list = window.HC_FAQ; if (!list) return null;
+  const words = s => norm(s).split(' ').filter(w => w.length > 2 && !FAQ_STOP.has(w)).map(stem);
+  const qt = [...new Set(words(q))]; if (!qt.length) return null;
+  let best = null;
+  for (const it of list) {
+    const qw = it._q || (it._q = words(it.q)), aw = it._a || (it._a = new Set(words(it.a)));
+    let sc = 0, hit = 0;
+    for (const w of qt) {
+      if (qw.includes(w)) { sc += 3; hit++; }
+      else if (w.length >= 4 && qw.some(x => x.length >= 4 && (x.startsWith(w) || w.startsWith(x)))) { sc += 2; hit++; }
+      else if (aw.has(w)) sc += 1;
+    }
+    if (hit / qt.length >= .5 && (!best || sc > best.sc)) best = { sc, it, cov: hit / qt.length };
+  }
+  return best && best.sc >= 4 ? best : null;
+}
+const esc = t => t.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
 function answer(q) {
   const t = ' ' + norm(q) + ' ', toks = norm(q).split(' ').filter(Boolean).map(stem);
   const scored = KB.map(e => {
@@ -165,7 +187,12 @@ function answer(q) {
     }
     return { e, sc };
   }).filter(x => x.sc >= 2).sort((a, b) => b.sc - a.sc);
-  if (!scored.length) return FALLBACK;
+  const fq = faqMatch(q), faqE = fq && { id: 'faq', a: esc(fq.it.a), act: ['book'] };
+  // the topics above win; the FAQ answers when nothing matched, or when it matches clearly better than a weak, generic topic
+  if (!scored.length) return faqE || FALLBACK;
+  if (faqE && scored[0].sc <= 3 && fq.sc >= scored[0].sc + 3) return faqE;
+  // a precise question ("kan I dække grå hår?") gets the precise FAQ answer rather than a topic overview; price questions keep the price lists
+  if (faqE && fq.cov === 1 && fq.sc >= 6 && !/\b(koster|pris|priser|kost)\b/.test(norm(q))) return faqE;
   // generic topics (prices, extensions, booking) give way to a specific answer when one matched
   const specific = scored.find(x => !x.e.base);
   const topic = scored.find(x => x.e.id !== 'prices');           // e.g. "hvad koster extensions" -> extensions
