@@ -975,3 +975,78 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
 /* the floating booking pill + AI button sit bottom-right: keep the footer's last lines above them */
 footer{padding-bottom:120px}
 @media(max-width:760px){footer{padding-bottom:44px}}   /* phones: body already reserves room for the bottom bar */
+
+/* ---------- 'Find din frisure' quiz ---------- */
+.qz{max-width:760px;margin:0 auto;padding:clamp(10px,3vw,30px) 0 clamp(60px,8vw,100px);text-align:center}
+.qz-top{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+.qz-back{font:inherit;font-size:.85rem;background:none;border:0;color:var(--mute);cursor:pointer;padding:6px 0;flex:none}
+.qz-bar{flex:1;height:4px;border-radius:4px;background:rgba(var(--inkc),.1);overflow:hidden}
+.qz-bar i{display:block;height:100%;background:var(--rose);transform-origin:left;transform:scaleX(0);transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+.qz-step{animation:qzIn .45s cubic-bezier(.2,.7,.2,1) both}
+@keyframes qzIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.qz-step h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.08;margin-bottom:22px}
+.qz-step h2 em{color:var(--rose-l)}
+.qz-step > p{color:var(--mute);max-width:46ch;margin:-8px auto 24px}
+.qz-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.qz-tile{position:relative;aspect-ratio:4/5;border-radius:18px;overflow:hidden;border:2px solid transparent;background:#000;cursor:pointer;padding:0;transition:transform .2s,border-color .2s}
+.qz-tile img{width:100%;height:100%;object-fit:cover;opacity:.92;transition:transform .5s}
+.qz-tile span{position:absolute;left:0;right:0;bottom:0;padding:28px 10px 12px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font-weight:500;font-size:.95rem}
+.qz-tile:hover img{transform:scale(1.05)}
+.qz-tile:hover,.qz-tile.on{border-color:var(--rose-l)}
+.qz-list{display:grid;gap:10px;max-width:440px;margin:0 auto}
+.qz-opt{font:inherit;font-size:1rem;padding:16px 20px;border-radius:16px;border:1px solid var(--line);background:rgba(var(--inkc),.04);color:var(--ink);cursor:pointer;text-align:left;transition:border-color .2s,background .2s}
+.qz-opt:hover,.qz-opt.on{border-color:var(--rose-l);background:rgba(181,129,114,.12)}
+/* photo ring: the salon's own work circling the centre photo */
+.qz-ring{position:relative;width:min(340px,80vw);aspect-ratio:1;margin:0 auto 22px}
+.qz-ring img{position:absolute;left:50%;top:50%;width:22%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:2px solid var(--line);
+  transform:translate(-50%,-50%) rotate(calc(var(--i) * 45deg)) translateY(-150%) rotate(calc(var(--i) * -45deg));animation:qzPop .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i) * 70ms)}
+.qz-ring .qz-ring-c{width:44%;transform:translate(-50%,-50%);border:3px solid var(--rose);animation:none}
+@keyframes qzPop{from{opacity:0;scale:.6}to{opacity:1;scale:1}}
+/* 'ready for something new': photos shift between hairstyles, with a soft scan line */
+.qz-morph{position:relative;width:min(300px,72vw);aspect-ratio:4/5;margin:0 auto 22px;border-radius:24px;overflow:hidden;background:#000}
+.qz-morph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;animation:qzMorph 10s infinite;animation-delay:calc(var(--i) * 2s)}
+@keyframes qzMorph{0%{opacity:0;transform:scale(1.06);filter:blur(6px)}6%{opacity:1;transform:scale(1);filter:blur(0)}20%{opacity:1}26%{opacity:0;filter:blur(6px)}100%{opacity:0}}
+.qz-scan{position:absolute;left:0;right:0;height:30%;background:linear-gradient(transparent,rgba(224,176,161,.35),transparent);animation:qzScan 2s linear infinite}
+@keyframes qzScan{from{top:-30%}to{top:100%}}
+/* result */
+.qz-cards{display:grid;gap:14px;text-align:left}
+.qz-card{display:grid;grid-template-columns:150px 1fr;gap:18px;padding:14px;border-radius:20px;border:1px solid var(--line);background:rgba(var(--inkc),.03);animation:qzIn .5s both}
+.qz-card:nth-child(2){animation-delay:.12s}.qz-card:nth-child(3){animation-delay:.24s}
+.qz-card img{width:100%;height:100%;min-height:150px;object-fit:cover;border-radius:14px}
+.qz-card h3{font-family:var(--serif);font-weight:400;font-size:1.45rem;line-height:1.1}
+.qz-price{display:inline-block;margin-top:6px;font-size:.78rem;color:var(--rose-l);letter-spacing:.04em}
+.qz-card p{color:var(--mute);font-size:.92rem;margin-top:8px}
+.qz-card-a{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
+.qz-more{font-size:.85rem;color:var(--rose-l)}
+.qz-tip{margin-top:18px;padding:16px 18px;border-radius:16px;border-left:3px solid var(--rose);background:rgba(var(--inkc),.04);text-align:left;font-size:.9rem;color:var(--mute)}
+.qz-tip b{display:block;color:var(--ink);font-family:var(--serif);font-weight:500;font-size:1.15rem;margin-bottom:2px}
+.qz-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px 14px;margin-top:22px}
+.qz-again{font:inherit;font-size:.85rem;background:none;border:0;color:var(--mute);text-decoration:underline;cursor:pointer}
+.qz-resp{max-width:56ch}
+@media(max-width:560px){.qz-card{grid-template-columns:1fr}.qz-card img{height:180px}.qz-tiles{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){.qz-step,.qz-ring img,.qz-card{animation:none}.qz-morph img{animation:none;opacity:0}.qz-morph img:first-child{opacity:1}.qz-scan{display:none}}
+/* homepage invitation + menu item */
+.quiz-invite{display:flex;align-items:center;gap:16px;margin:0 0 22px;padding:12px 18px 12px 12px;border-radius:20px;border:1px solid rgba(224,176,161,.35);background:linear-gradient(120deg,rgba(181,129,114,.18),rgba(181,129,114,.04));transition:border-color .2s}
+.quiz-invite:hover{border-color:var(--rose-l)}
+.quiz-invite img{width:64px;height:64px;border-radius:14px;object-fit:cover;flex:none}
+.quiz-invite span{flex:1;font-size:.9rem;color:var(--mute)}
+.quiz-invite b{display:block;font-family:var(--serif);font-weight:500;font-size:1.2rem;color:var(--ink)}
+.quiz-invite em{font-style:normal;font-size:.85rem;color:var(--rose-l);white-space:nowrap}
+@media(max-width:560px){.quiz-invite{flex-wrap:wrap}.quiz-invite em{width:100%;padding-left:80px;margin-top:-6px}}
+.dd-m a.dd-quiz span{color:var(--rose-l)}
+@media(max-width:560px){
+  .qz-morph{width:min(220px,58vw)}
+  .qz-ring{width:min(280px,72vw)}
+  .qz-step h2{margin-bottom:16px}
+  .qz{padding-bottom:110px}   /* clear of the bottom bar */
+}
+/* quiz page: the quiz itself is the call to action, so the page header stays short and the quiz starts high */
+.page-top:has([data-cta="quiz-book"],[data-cta="quiz-en-book"]){padding-bottom:6px}
+.page-top:has([data-cta="quiz-book"],[data-cta="quiz-en-book"]) :is(.svc-ctas,.byline){display:none}
+.page-top:has([data-cta="quiz-book"],[data-cta="quiz-en-book"]) .lead{margin-bottom:0}
+@media(max-width:560px){
+  .page-top:has([data-cta="quiz-book"],[data-cta="quiz-en-book"]) .lead{display:none}
+  .qz-intro .qz-ring{width:min(190px,52vw);margin-bottom:12px}
+  .qz-intro > p{display:none}
+  .qz-top{margin-bottom:14px}
+}
