@@ -11,13 +11,13 @@ const me = document.currentScript, KEY = 'hc-consent', MAX_AGE = 365 * 24 * 3600
 const en = (document.documentElement.lang || '').startsWith('en');
 const T = en ? {
   title: 'We use cookies', text: 'We use necessary cookies to make the site work. With your consent we would also like to use cookies for statistics and marketing, so we can improve the site. You can change your choice at any time.',
-  all: 'Accept all', nec: 'Necessary only', custom: 'Customise', save: 'Save choice', more: 'Read our cookie policy', priv: 'privacy policy',
+  short: 'We use necessary cookies. May we also use cookies for statistics and marketing?', all: 'Accept all', nec: 'Necessary only', custom: 'Customise', save: 'Save choice', more: 'Read our cookie policy', priv: 'privacy policy',
   cats: [['necessary', 'Necessary', 'Needed for the site to work, e.g. remembering your cookie choice and light/dark theme. Always on.'],
          ['statistics', 'Statistics', 'Anonymous statistics about how the site is used, so we can improve it.'],
          ['marketing', 'Marketing', 'Used to show relevant ads and measure our campaigns.']]
 } : {
   title: 'Vi bruger cookies', text: 'Vi bruger nødvendige cookies, så siden virker. Med dit samtykke vil vi også gerne bruge cookies til statistik og marketing, så vi kan forbedre siden. Du kan altid ændre dit valg.',
-  all: 'Accepter alle', nec: 'Kun nødvendige', custom: 'Tilpas', save: 'Gem valg', more: 'Læs vores cookiepolitik', priv: 'privatlivspolitik',
+  short: 'Vi bruger nødvendige cookies. Må vi også bruge cookies til statistik og marketing?', all: 'Accepter alle', nec: 'Kun nødvendige', custom: 'Tilpas', save: 'Gem valg', more: 'Læs vores cookiepolitik', priv: 'privatlivspolitik',
   cats: [['necessary', 'Nødvendige', 'Skal til for at siden virker, fx at huske dit cookievalg og lyst/mørkt tema. Altid slået til.'],
          ['statistics', 'Statistik', 'Anonym statistik om, hvordan siden bruges, så vi kan forbedre den.'],
          ['marketing', 'Marketing', 'Bruges til at vise relevante annoncer og måle vores kampagner.']]
@@ -47,7 +47,7 @@ function build() {
   const cur = read() || { statistics: false, marketing: false };
   box.innerHTML = `
     <h2 id="ccTitle">${T.title}</h2>
-    <p id="ccText">${T.text} <a href="${cookiesUrl}">${T.more}</a> · <a href="${privacyUrl}">${T.priv}</a></p>
+    <p id="ccText"><span class="cc-long">${T.text} </span><span class="cc-short">${T.short} </span><a href="${cookiesUrl}">${T.more}</a> · <a href="${privacyUrl}">${T.priv}</a></p>
     <div class="cc-cats" hidden>${T.cats.map(([k, n, d], i) => `
       <label class="cc-cat"><span><b>${n}</b><small>${d}</small></span>
         <input type="checkbox" data-k="${k}" ${i === 0 ? 'checked disabled' : (cur[k] ? 'checked' : '')}><i class="cc-sw" aria-hidden="true"></i></label>`).join('')}
@@ -71,6 +71,6 @@ function close() { if (!box) return; box.classList.remove('show'); document.docu
 
 document.addEventListener('click', e => { if (e.target.closest('[data-cookie-settings]')) { e.preventDefault(); open(); } });
 const existing = read();
-if (existing) apply(existing); else setTimeout(open, 500);
+if (existing) apply(existing); else setTimeout(open, 1400);
 window.hcConsent = { get: read, open };
 })();

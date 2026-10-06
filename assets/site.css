@@ -1,6 +1,6 @@
 :root{
   --bg:#0e0a08; --bg2:#15100d; --ink:#f4ebe4; --ink2:#e3d7cf; --mute:#b9a89d; --dim:#8a7a70;
-  --rose:#b58172; --rose-h:#c8907f; --rose-l:#e0b0a1; --amber:#e0a35f; --ok:#8fcf9a; --line:rgba(244,235,228,.12);
+  --rose:#b58172; --rose-h:#c8907f; --btn:#9c6656; --btn-h:#8a5949; --rose-l:#e0b0a1; --amber:#e0a35f; --ok:#8fcf9a; --line:rgba(244,235,228,.12);
   --sf:14,10,8; --scr:11,8,7; --inkc:244,235,228; --logo:rgba(246,236,230,.95);
   --tsh:0 2px 18px rgba(0,0,0,.9); --galbg:radial-gradient(ellipse 70% 55% at 50% 62%,#3a2519 0%,#160f0b 55%,#0e0a08 100%);
   --serif:"Cormorant Garamond",Georgia,serif; --sans:"DM Sans",system-ui,sans-serif;
@@ -8,7 +8,7 @@
 }
 :root[data-theme="light"]{
   --bg:#f7f1ec; --bg2:#efe6de; --ink:#2b1e18; --ink2:#46362e; --mute:#6e5c52; --dim:#94817a;
-  --rose:#a8705f; --rose-h:#96604f; --rose-l:#94553f; --amber:#c27d2c; --ok:#3f9a55; --line:rgba(43,30,24,.13);
+  --rose:#a8705f; --rose-h:#96604f; --btn:#94604f; --btn-h:#82513f; --rose-l:#94553f; --amber:#c27d2c; --ok:#3f9a55; --line:rgba(43,30,24,.13);
   --sf:250,246,242; --scr:247,241,236; --inkc:43,30,24; --logo:#3a2820;
   --tsh:0 1px 14px rgba(247,241,236,.9); --galbg:radial-gradient(ellipse 70% 55% at 50% 62%,#f3dfcf 0%,#efe6de 60%,#f7f1ec 100%);
   color-scheme:light;
@@ -20,7 +20,7 @@ html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
-.logo{display:block;background:currentColor;-webkit-mask:url(../web/logo.png) center/contain no-repeat;mask:url(../web/logo.png) center/contain no-repeat;aspect-ratio:777/259}
+.logo{display:block;background:currentColor;-webkit-mask:url(../web/logo.webp) center/contain no-repeat;mask:url(../web/logo.webp) center/contain no-repeat;aspect-ratio:777/259}
 .eyebrow{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--rose-l);font-weight:500}
 .serif{font-family:var(--serif);font-weight:400}
 h2.title{font-family:var(--serif);font-weight:400;font-size:clamp(2.3rem,5vw,4.2rem);line-height:1.02;margin-top:14px}
@@ -111,7 +111,8 @@ html.menu-open .dock,html.menu-open .hc-chat{display:none}
   .hero-trust > span:last-child{display:none}
   .scroll-cue{display:none}
 }
-.hero-ui .logo{width:min(560px,74vw,62vh);color:var(--logo);filter:drop-shadow(0 6px 40px rgba(0,0,0,.7));clip-path:inset(0 100% 0 0);pointer-events:none}
+.hero-ui .logo{width:min(560px,74vw,62vh);color:var(--logo);filter:drop-shadow(0 6px 40px rgba(0,0,0,.7));pointer-events:none;animation:logoIn 1.5s cubic-bezier(.65,0,.35,1) .1s both}
+@keyframes logoIn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 .hero-ui h1{text-wrap:balance;font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3vw,2.3rem);line-height:1.15;margin-top:8px;text-shadow:var(--tsh)}
 .hero-ui .sub{text-wrap:balance;max-width:44ch;margin-top:10px;font-size:clamp(.92rem,1.4vw,1.05rem);color:var(--ink2);text-shadow:var(--tsh)}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:26px}
@@ -126,7 +127,11 @@ html.menu-open .dock,html.menu-open .hc-chat{display:none}
 .hero-rev .q{font-family:var(--serif);font-style:italic;font-size:1rem;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .4s}
 .hero-rev .q i{font-family:var(--sans);font-style:normal;font-size:.75rem;color:var(--mute);margin-left:6px}
 @media(max-width:760px){.hero-rev{display:none}.m-only{display:inline-flex!important}}
-.hero-in{opacity:0;transform:translateY(16px)}
+/* hero copy animates in with CSS only, so it is readable at first paint and never waits for the 3D scripts */
+.hero-in{animation:heroIn .7s cubic-bezier(.2,.7,.2,1) both}
+.hero-in:nth-of-type(2){animation-delay:.08s}.hero-cta.hero-in{animation-delay:.16s}.hero-trust.hero-in{animation-delay:.24s}.hero-rev.hero-in{animation-delay:.32s}
+@keyframes heroIn{from{transform:translateY(14px)}to{transform:none}}
+@media(prefers-reduced-motion:reduce){.hero-in,.hero-ui .logo{animation:none}}
 .hero-end{color:#f4ebe4;position:absolute;inset:0;display:grid;place-items:center;text-align:center;opacity:0;visibility:hidden;padding:16px}
 .hero-end h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,6.5vw,5.8rem);line-height:.98;text-shadow:0 4px 50px rgba(0,0,0,.8)}
 .hero-end h2 em{color:#e0b0a1}
@@ -347,7 +352,7 @@ html.menu-open .dock,html.menu-open .hc-chat{display:none}
 .visit-cta p{color:var(--mute);margin-top:18px}
 .visit-cta .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:34px}
 .visit-grid{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,4vw,60px);margin-top:clamp(70px,9vw,120px);padding-top:46px;border-top:1px solid var(--line)}
-.visit-grid h4{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--rose-l);font-weight:500;margin-bottom:16px}
+.visit-grid h3,.visit-grid h4{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--rose-l);font-weight:500;margin-bottom:16px}
 .visit-grid p,.hours div{font-size:.95rem;color:var(--ink2)}
 .visit-grid a.u{border-bottom:1px solid rgba(224,176,161,.4)}
 .hours div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line)}
@@ -785,3 +790,32 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
 .hc-park small{grid-column:1;font-size:.74rem;color:var(--mute)}
 .hc-park a{grid-row:1/3;grid-column:2;font-size:.76rem;color:var(--rose-l);white-space:nowrap}
 .hc-pnote{display:block;font-size:.72rem;color:var(--mute)}
+.pmap-lazy{min-height:900px;margin-top:clamp(50px,7vw,90px);scroll-margin-top:90px}
+@media(max-width:900px){.pmap-lazy{min-height:1300px}}
+
+/* the hero's pin distance is reserved in CSS (GSAP takes over the same spacer), so nothing jumps when the scroll effect starts
+   and the sections below begin outside the browser's early image-fetch zone */
+#heroSpacer{height:190vh}
+@media(max-width:760px){#heroSpacer{height:160vh}}
+
+/* cookie banner: compact on phones so the hero (headline, booking, rating) stays visible */
+.cc-short{display:none}
+@media(max-width:760px){
+  .cc{padding:14px 14px 12px;border-radius:18px;bottom:calc(80px + env(safe-area-inset-bottom))}
+  .cc h2{font-size:1.15rem;margin-bottom:4px}
+  .cc p{font-size:.8rem;line-height:1.45}
+  .cc-long{display:none}.cc-short{display:inline}
+  .cc-btns{grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}
+  .cc-btns .ghost{grid-column:auto}
+  .cc-b{font-size:.76rem;padding:.75em .3em}
+  .cc-cats{margin-top:10px}
+}
+
+/* accessibility: white button text needs ≥4.5:1, so solid buttons use a slightly deeper rose */
+.btn:not(.ghost){background:var(--btn)}
+.btn:not(.ghost):hover{background:var(--btn-h)}
+.cc-b:not(.ghost){background:var(--btn);border-color:var(--btn)}
+.fest-insp-note a{text-decoration:underline;text-underline-offset:2px}
+
+.pc-meta span{color:var(--mute)}
+.t247{background:var(--btn)!important}
