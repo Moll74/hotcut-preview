@@ -110,7 +110,7 @@ const KB = [
   { id: 'analysis', k: ['analyse', 'håranalyse', 'analysen', 'voucher', 'rabat på produkter', 'produktrabat', 'hovedbundsanalyse', 'hovedbund', 'hårtab', 'skæl', 'tørt hår', 'tør hovedbund', 'fedtet', 'kløe', 'scanner', 'mikroskop', 'maskine', 'udstyr', 'undersøge mit hår', 'hvad har mit hår brug for'],
     a: `Vi tilbyder <b>hår- og hovedbundsanalyse</b> med vores særlige analyseudstyr. Et håndholdt kamera med kraftig forstørrelse viser din hovedbund og dine hårstrå på en skærm, så du selv kan se dem. Vi forklarer, hvad vi ser, og giver dig konkrete råd om behandling og pleje. <br><br><b>Prisen er 100 kr</b>, og køber du produkter for 400 kr, trækkes de 100 kr fra. Det svarer til 25 % rabat på produkterne. Analysen kan kombineres med en klipning.`, act: [{ label: 'Book analyse', href: BOOK, primary: true }, 'call'] },
   { id: 'brands', k: ['rigtige produkt', 'det rigtige produkt', 'mærker', 'mærke', 'brands', 'brand', 'hvilke produkter', 'hvilke mærker', 'produkter sælger i', 'hvad sælger i'],
-    a: `Vi bruger og sælger <b>Olaplex</b>, <b>Roze Avenue</b>, <b>Sanzi Beauty</b>, <b>Hairtalk</b>, <b>ghd</b> og <b>idHAIR</b>. Vil du vide mere om et af mærkerne eller et bestemt produkt, så skriv bare.<br><br>Tip: en håranalyse koster 100 kr, og beløbet trækkes fra, når du køber produkter for 400 kr.`, act: [{ label: 'Se produkterne', href: '#produkter' }, 'call'] },
+    a: `Vi bruger og sælger professionelle produkter fra seks mærker:<br>• <b>Olaplex</b>: genopbygger håret efter farve, varme og sol<br>• <b>Roze Avenue</b>: nordisk hårpleje, tørshampoo og selvbruner<br>• <b>Sanzi Beauty</b>: serum til vipper og bryn, mascara og læbeprodukter<br>• <b>Hairtalk</b>: extensions og Hairband<br>• <b>ghd</b>: glattejern, føntørrere og krøllejern<br>• <b>idHAIR</b>: de hårfarver, vi farver med<br><br>Spørg mig gerne om et bestemt mærke eller produkt.<br><br>Tip: en håranalyse koster 100 kr, og beløbet trækkes fra, når du køber produkter for 400 kr.`, act: [{ label: 'Se produkterne', href: '#produkter' }, 'call'] },
   { id: 'olaplex', k: ['olaplex', 'bond repair', 'bond', 'bindinger', 'no.3', 'no 3', 'nr 3', 'hair perfector', 'no.4', 'no 4', 'nr 4', 'bond maintenance', '4p', 'no.4p', 'silvershampoo', 'lilla shampoo', 'gule toner', 'gult hår', 'messing', '4c', 'no.4c', 'dybderens', 'clarifying', 'no.7', 'olie', 'hårolie', 'bonding oil'],
     a: `<b>Olaplex</b> genopbygger de bindinger i håret, som farvning, varme og sol bryder ned. Olaplex er med i vores farvebehandlinger på mellemlangt og langt hår. Til hjemmebrug har vi:<br>• <b>No.3 Hair Perfector</b>: kur, der kommes i fugtigt hår <i>før</i> shampoo og virker i mindst 10 minutter.<br>• <b>No.4 Bond Maintenance</b>: plejende shampoo til alle hårtyper.<br>• <b>No.4P Blonde Enhancer</b>: lilla toningsshampoo, der fjerner gule og messingagtige toner i lyst hår.<br>• <b>No.4C Clarifying</b>: dybderensende shampoo mod rester af produkter, fx én gang om ugen.<br>• <b>Olien (No.7 Bonding Oil)</b>: glans og varmebeskyttelse.<br><br>Spørg os i salonen, hvilken kombination der passer til dit hår.`, act: [{ label: 'Olaplex.com', href: 'https://olaplex.com/' }, 'call'] },
   { id: 'roze', k: ['roze avenue', 'roze', 'tørshampoo', 'dry shampoo', 'volumen tørshampoo', 'brown covering', 'luxury restore', 'restore masq', 'hårmaske', 'selvbruner', 'self tan', 'glow collection', 'selvbrunerdråber', 'mousse', 'money masque'],
@@ -152,6 +152,8 @@ const KB = [
 const FAQ_SRC = ((document.currentScript && document.currentScript.src) || '').replace(/assistant(-en)?\.js.*$/, 'assets/faq-da.js');
 if (FAQ_SRC && !window.HC_FAQ) { const sc = document.createElement('script'); sc.src = FAQ_SRC; sc.async = true; document.head.appendChild(sc); }
 const FAQ_STOP = new Set('jeg i du vi de det den en et er at og eller på til med for af om hvad hvor hvordan hvornår hvem hvilke hvilken kan man har have mit min mine jeres jer det der som ikke også så når skal må vil gør får'.split(' '));
+const PRODUCT_IDS = new Set(['brands', 'olaplex', 'roze', 'sanzi', 'hairband', 'ghd', 'idhair', 'clipon']);
+const SHOP_NOTE = `<br><br><b>Kom forbi salonen</b> på Søndergade 12, så viser vi dig produkterne på produktvæggen og finder det, der passer til dit hår. Vil du vide, om vi har et bestemt produkt på lager, eller hvad det koster, så ring på 97 12 60 60.`;
 const FALLBACK = { a: `Det kan jeg desværre ikke svare sikkert på ud fra hjemmesiden. Ring til salonen på <b>97 12 60 60</b> eller skriv til info@hotcut.dk, så får du et præcist svar.`, act: ['call', 'mail'] };
 const CHIPS = ['Priser', 'Åbningstider', 'Book tid', 'Håranalyse', 'Hvilke produkter sælger I?', 'Extensions', 'Balayage', 'Herreklip', 'Hvor ligger I?', 'Hvor kan jeg parkere?'];
 
@@ -253,8 +255,12 @@ function reply(q, spoken = false) {
   const e = answer(q);
   track('chat_question', { chat_intent: e.id || 'fallback' });
   setTimeout(() => {
-    typing.remove(); const html = typeof e.a === 'function' ? e.a() : e.a;
-    bubble(html, 'bot', e.act || []);
+    typing.remove(); let html = typeof e.a === 'function' ? e.a() : e.a, act = e.act || [];
+    if (PRODUCT_IDS.has(e.id)) {                          // products: short intro, then point people to the salon for advice, stock and prices
+      html += SHOP_NOTE;
+      act = [...act.filter(x => x !== 'map' && x !== 'call'), 'map', 'call'];
+    }
+    bubble(html, 'bot', act);
     if (spoken) speak(html);                                        // answer out loud when the question was spoken
   }, 550 + Math.random() * 400);
 }

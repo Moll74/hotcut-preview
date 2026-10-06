@@ -1070,7 +1070,7 @@ const hcRevealInCarousel = id => { const t = id && document.getElementById(id); 
 document.addEventListener('click', e => { const a = e.target.closest('a[href*="#"]'); if (a && a.hash && a.pathname === location.pathname) setTimeout(() => hcRevealInCarousel(a.hash.slice(1)), 60); });
 if (location.hash) setTimeout(() => hcRevealInCarousel(location.hash.slice(1)), 700);
 };
-const hcBoot = () => { hcLoad('assets/vendor/gsap.min.js'); hcLoad('assets/vendor/ScrollTrigger.min.js'); hcLoad('assets/vendor/lenis.min.js', hcMain); hcLoad('assistant.js?v=202610062200'); };
+const hcBoot = () => { hcLoad('assets/vendor/gsap.min.js'); hcLoad('assets/vendor/ScrollTrigger.min.js'); hcLoad('assets/vendor/lenis.min.js', hcMain); hcLoad('assistant.js?v=202610071400'); };
 document.readyState === 'complete' ? hcBoot() : addEventListener('load', hcBoot, { once: true });
 </script>
 </body>

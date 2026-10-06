@@ -110,7 +110,7 @@ const KB = [
   { id: 'analysis', k: ['analysis', 'hair analysis', 'scalp analysis', 'analyse', 'analyze', 'voucher', 'product discount', 'discount on products', 'scalp', 'hair loss', 'losing hair', 'dandruff', 'dry hair', 'dry scalp', 'greasy', 'oily', 'itchy', 'itching', 'scanner', 'microscope', 'camera', 'machine', 'equipment', 'examine my hair', 'what does my hair need'],
     a: `We offer <b>hair and scalp analysis</b> with our special analysis equipment. A handheld camera with powerful magnification shows your scalp and hair strands on a screen, so you can see them for yourself. We explain what we see and give you specific advice on treatment and care. <br><br><b>The price is DKK 100</b>, and if you buy products for DKK 400, the DKK 100 is deducted. That's equivalent to a 25% discount on the products. The analysis can be combined with a haircut.`, act: [{ label: 'Book analysis', href: BOOK, primary: true }, 'call'] },
   { id: 'brands', k: ['right product', 'the right product', 'brands', 'which products', 'what products', 'which brands', 'what brands', 'products do you sell', 'products do you have', 'what do you sell', 'product range'],
-    a: `We use and sell <b>Olaplex</b>, <b>Roze Avenue</b>, <b>Sanzi Beauty</b>, <b>Hairtalk</b>, <b>ghd</b> and <b>idHAIR</b>. If you'd like to know more about one of the brands or a specific product, just ask.<br><br>Tip: a hair analysis costs DKK 100, and the amount is deducted when you buy products for DKK 400.`, act: [{ label: 'See the products', href: '#produkter' }, 'call'] },
+    a: `We use and sell professional products from six brands:<br>• <b>Olaplex</b>: rebuilds hair after colour, heat and sun<br>• <b>Roze Avenue</b>: Nordic hair care, dry shampoo and self-tan<br>• <b>Sanzi Beauty</b>: lash and brow serum, mascara and lip products<br>• <b>Hairtalk</b>: extensions and the Hairband<br>• <b>ghd</b>: straighteners, hairdryers and curling tongs<br>• <b>idHAIR</b>: the hair colours we use<br><br>Feel free to ask me about a specific brand or product.<br><br>Tip: a hair analysis costs DKK 100, and the amount is deducted when you buy products for DKK 400.`, act: [{ label: 'See the products', href: '#produkter' }, 'call'] },
   { id: 'olaplex', k: ['olaplex', 'bond repair', 'bond', 'no.3', 'no3', 'hair perfector', 'no.4', 'bond maintenance', '4p', 'no.4p', 'purple shampoo', 'silver shampoo', 'yellow tones', 'yellow hair', 'brassy', 'brassiness', '4c', 'no.4c', 'clarifying', 'deep cleansing', 'no.7', 'oil', 'hair oil', 'bonding oil'],
     a: `<b>Olaplex</b> rebuilds the bonds in the hair that colouring, heat and sun break down. Olaplex is included in our colour treatments on medium and long hair. For use at home we have:<br>• <b>No.3 Hair Perfector</b>: a treatment applied to damp hair <i>before</i> shampoo and left on for at least 10 minutes.<br>• <b>No.4 Bond Maintenance</b>: a nourishing shampoo for all hair types.<br>• <b>No.4P Blonde Enhancer</b>: a purple toning shampoo that removes yellow and brassy tones in light hair.<br>• <b>No.4C Clarifying</b>: a deep-cleansing shampoo against product build-up, e.g. once a week.<br>• <b>The oil (No.7 Bonding Oil)</b>: shine and heat protection.<br><br>Ask us in the salon which combination suits your hair.`, act: [{ label: 'Olaplex.com', href: 'https://olaplex.com/' }, 'call'] },
   { id: 'roze', k: ['roze avenue', 'roze', 'dry shampoo', 'volumizing', 'volumising', 'brown covering', 'luxury restore', 'restore masq', 'hair mask', 'self tanner', 'self-tanner', 'self tan', 'tanning drops', 'glow collection', 'mousse', 'money masque'],
@@ -152,6 +152,8 @@ const KB = [
 const FAQ_SRC = ((document.currentScript && document.currentScript.src) || '').replace(/assistant(-en)?\.js.*$/, 'assets/faq-en.js');
 if (FAQ_SRC && !window.HC_FAQ) { const sc = document.createElement('script'); sc.src = FAQ_SRC; sc.async = true; document.head.appendChild(sc); }
 const FAQ_STOP = new Set('i you we the a an is are do does to and or on in at for of about what where how when who which can i my your have has it that this there not also so will should get me'.split(' '));
+const PRODUCT_IDS = new Set(['brands', 'olaplex', 'roze', 'sanzi', 'hairband', 'ghd', 'idhair', 'clipon']);
+const SHOP_NOTE = `<br><br><b>Drop by the salon</b> at Søndergade 12 and we will show you the products on our product wall and find what suits your hair. To check whether a product is in stock, or what it costs, call +45 97 12 60 60.`;
 const FALLBACK = { a: `Unfortunately I can't answer that reliably from the website. Call the salon on <b>97 12 60 60</b> or write to info@hotcut.dk and you'll get an accurate answer.`, act: ['call', 'mail'] };
 const CHIPS = ['Prices', 'Opening hours', 'Book a time', 'Hair analysis', 'Which products do you sell?', 'Extensions', 'Balayage', 'Men\'s cut', 'Where are you?', 'Where can I park?'];
 
@@ -255,8 +257,12 @@ function reply(q, spoken = false) {
   const e = answer(q);
   track('chat_question', { chat_intent: e.id || 'fallback' });
   setTimeout(() => {
-    typing.remove(); const html = typeof e.a === 'function' ? e.a() : e.a;
-    bubble(html, 'bot', e.act || []);
+    typing.remove(); let html = typeof e.a === 'function' ? e.a() : e.a, act = e.act || [];
+    if (PRODUCT_IDS.has(e.id)) {                          // products: short intro, then point people to the salon for advice, stock and prices
+      html += SHOP_NOTE;
+      act = [...act.filter(x => x !== 'map' && x !== 'call'), 'map', 'call'];
+    }
+    bubble(html, 'bot', act);
     if (spoken) speak(html);                                        // answer out loud when the question was spoken
   }, 550 + Math.random() * 400);
 }
