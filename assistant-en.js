@@ -44,7 +44,11 @@ const KB = [
   { id: 'address', k: ['address', 'where are you', 'where is the salon', 'where is hot cut', 'find you', 'location', 'located', 'søndergade', 'directions', 'how do i get there', 'city centre', 'city center', 'pedestrian street', 'map'],
     a: `You'll find us at <b>Søndergade 12, 7400 Herning</b>, in the centre of town. It's easy to combine with a stroll down the pedestrian street or a visit to a café.`, act: ['map', 'book'] },
   { id: 'parking', k: ['parking', 'car park', 'parking space', 'car'],
-    a: `There is kerbside parking along Søndergade, the street you drive along to the salon, and a large car park just around the corner by Herning Library and the cinema. The station's underground car park is also a few minutes away. <a href="#parking">See the parking map</a> on the home or contact page, and check the signs for time limits.`, act: ['call', 'map'] },
+    a: () => { const P = window.HC_PARK, img = FAQ_SRC.replace(/faq-(da|en)\.js.*$/, 'parking-map-en.svg');
+      if (!P || !FAQ_SRC) return `There is kerbside parking along Søndergade, the street you drive along to the salon, and a large car park just around the corner by Herning Library and the cinema. The station's underground car park is also a few minutes away. <a href="#parking">See the parking map</a> on the home or contact page, and check the signs for time limits.`;
+      return `Here is where you can park near the salon:<a class="hc-map" href="${img}" target="_blank" rel="noopener"><img src="${img}" alt="Map of parking near Hot Cut"></a>`
+        + '<ol class="hc-park">' + P.map(p => `<li><b>${p.n} · ${p.t}</b><small>${p.m ? '≈ ' + p.m + ' min walk' : 'Right by the salon'}</small><a href="https://www.google.com/maps/dir/?api=1&amp;destination=${p.lat},${p.lon}" target="_blank" rel="noopener">Directions ↗</a></li>`).join('') + '</ol>'
+        + `<small class="hc-pnote">Tap the map to open it full size. Check the signs for time limits.</small>`; }, act: ['call', 'map'] },
   { id: 'contact', k: ['phone', 'phone number', 'telephone', 'number', 'call', 'ring', 'mail', 'email', 'e-mail', 'contact', 'get in touch', 'write'],
     a: `You can reach Hot Cut on:<br>📞 <b>97 12 60 60</b><br>✉️ <b>info@hotcut.dk</b><br>📍 Søndergade 12, 7400 Herning`, act: ['call', 'mail'] },
   { id: 'book', base: true, k: ['book', 'appointment', 'reserve', 'reservation', 'available', 'availability', 'time slot', 'free slot', 'online', 'schedule'],
@@ -149,7 +153,7 @@ const FAQ_SRC = ((document.currentScript && document.currentScript.src) || '').r
 if (FAQ_SRC && !window.HC_FAQ) { const sc = document.createElement('script'); sc.src = FAQ_SRC; sc.async = true; document.head.appendChild(sc); }
 const FAQ_STOP = new Set('i you we the a an is are do does to and or on in at for of about what where how when who which can i my your have has it that this there not also so will should get me'.split(' '));
 const FALLBACK = { a: `Unfortunately I can't answer that reliably from the website. Call the salon on <b>97 12 60 60</b> or write to info@hotcut.dk and you'll get an accurate answer.`, act: ['call', 'mail'] };
-const CHIPS = ['Prices', 'Opening hours', 'Book a time', 'Hair analysis', 'Which products do you sell?', 'Extensions', 'Balayage', 'Men\'s cut', 'Where are you?'];
+const CHIPS = ['Prices', 'Opening hours', 'Book a time', 'Hair analysis', 'Which products do you sell?', 'Extensions', 'Balayage', 'Men\'s cut', 'Where are you?', 'Where can I park?'];
 
 /* ---------- matching ---------- */
 const norm = s => s.toLowerCase().normalize('NFC').replace(/[^\p{L}\p{N}\s-]/gu, ' ').replace(/\s+/g, ' ').trim();
@@ -240,7 +244,9 @@ function bubble(html, who, actions = []) {
     });
     m.appendChild(r);
   }
-  log.appendChild(m); log.scrollTop = log.scrollHeight;
+  log.appendChild(m);
+  // long answers (e.g. the parking map) start at their top; short ones just scroll to the end
+  log.scrollTop = who === 'bot' && m.offsetHeight > log.clientHeight * .7 ? m.offsetTop - 8 : log.scrollHeight;
 }
 function reply(q, spoken = false) {
   bubble(q.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c])), 'me');

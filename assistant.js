@@ -44,7 +44,11 @@ const KB = [
   { id: 'address', k: ['adresse', 'hvor ligger', 'hvor er i', 'find jer', 'finde jer', 'søndergade', 'beliggenhed', 'rutevejledning', 'kørselsvejledning', 'centrum', 'gågade', 'vej'],
     a: `Du finder os på <b>Søndergade 12, 7400 Herning</b>, centralt i byen. Det er nemt at kombinere med en tur i gågaden eller på café.`, act: ['map', 'book'] },
   { id: 'parking', k: ['parkering', 'parkere', 'p-plads', 'bil', 'holde'],
-    a: `Der er kantparkering langs Søndergade, som du kører ad hen til salonen, og en stor p-plads lige rundt om hjørnet ved Herning Bibliotek og biografen. Banegårdens P-kælder ligger også få minutters gang væk. <a href="#parkering">Se parkeringskortet</a> på forsiden eller kontaktsiden, og tjek skiltningen for tidsbegrænsning.`, act: ['call', 'map'] },
+    a: () => { const P = window.HC_PARK, img = FAQ_SRC.replace(/faq-(da|en)\.js.*$/, 'parking-map-da.svg');
+      if (!P || !FAQ_SRC) return `Der er kantparkering langs Søndergade, som du kører ad hen til salonen, og en stor p-plads lige rundt om hjørnet ved Herning Bibliotek og biografen. Banegårdens P-kælder ligger også få minutters gang væk. <a href="#parkering">Se parkeringskortet</a> på forsiden eller kontaktsiden, og tjek skiltningen for tidsbegrænsning.`;
+      return `Her kan du parkere tæt på salonen:<a class="hc-map" href="${img}" target="_blank" rel="noopener"><img src="${img}" alt="Kort over parkering ved Hot Cut"></a>`
+        + '<ol class="hc-park">' + P.map(p => `<li><b>${p.n} · ${p.t}</b><small>${p.m ? '≈ ' + p.m + ' min. gang' : 'Lige ved salonen'}</small><a href="https://www.google.com/maps/dir/?api=1&amp;destination=${p.lat},${p.lon}" target="_blank" rel="noopener">Rutevejledning ↗</a></li>`).join('') + '</ol>'
+        + `<small class="hc-pnote">Tryk på kortet for at se det i stor størrelse. Tjek skiltningen for tidsbegrænsning.</small>`; }, act: ['call', 'map'] },
   { id: 'contact', k: ['telefon', 'telefonnummer', 'nummer', 'ringe', 'ring', 'mail', 'email', 'e-mail', 'kontakt', 'kontakte', 'skrive'],
     a: `Du kan kontakte Hot Cut på:<br>📞 <b>97 12 60 60</b><br>✉️ <b>info@hotcut.dk</b><br>📍 Søndergade 12, 7400 Herning`, act: ['call', 'mail'] },
   { id: 'book', base: true, k: ['book', 'booke', 'booking', 'bestil', 'bestille', 'ledig', 'ledige', 'tid', 'aftale', 'reservere', 'online'],
@@ -149,7 +153,7 @@ const FAQ_SRC = ((document.currentScript && document.currentScript.src) || '').r
 if (FAQ_SRC && !window.HC_FAQ) { const sc = document.createElement('script'); sc.src = FAQ_SRC; sc.async = true; document.head.appendChild(sc); }
 const FAQ_STOP = new Set('jeg i du vi de det den en et er at og eller på til med for af om hvad hvor hvordan hvornår hvem hvilke hvilken kan man har have mit min mine jeres jer det der som ikke også så når skal må vil gør får'.split(' '));
 const FALLBACK = { a: `Det kan jeg desværre ikke svare sikkert på ud fra hjemmesiden. Ring til salonen på <b>97 12 60 60</b> eller skriv til info@hotcut.dk, så får du et præcist svar.`, act: ['call', 'mail'] };
-const CHIPS = ['Priser', 'Åbningstider', 'Book tid', 'Håranalyse', 'Hvilke produkter sælger I?', 'Extensions', 'Balayage', 'Herreklip', 'Hvor ligger I?'];
+const CHIPS = ['Priser', 'Åbningstider', 'Book tid', 'Håranalyse', 'Hvilke produkter sælger I?', 'Extensions', 'Balayage', 'Herreklip', 'Hvor ligger I?', 'Hvor kan jeg parkere?'];
 
 /* ---------- matching ---------- */
 const norm = s => s.toLowerCase().normalize('NFC').replace(/[^\p{L}\p{N}\s-]/gu, ' ').replace(/\s+/g, ' ').trim();
@@ -238,7 +242,9 @@ function bubble(html, who, actions = []) {
     });
     m.appendChild(r);
   }
-  log.appendChild(m); log.scrollTop = log.scrollHeight;
+  log.appendChild(m);
+  // long answers (e.g. the parking map) start at their top; short ones just scroll to the end
+  log.scrollTop = who === 'bot' && m.offsetHeight > log.clientHeight * .7 ? m.offsetTop - 8 : log.scrollHeight;
 }
 function reply(q, spoken = false) {
   bubble(q.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c])), 'me');

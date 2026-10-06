@@ -775,3 +775,13 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
 .pm-meta a{color:var(--rose-l)}
 .pm-note{font-size:.75rem;color:var(--dim);margin-top:14px}
 @media(max-width:900px){.pm-grid{grid-template-columns:1fr}}
+
+/* assistant: parking map inside the chat */
+.hc-map{display:block;margin:10px 0 8px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.hc-map img{display:block;width:100%;height:auto}
+.hc-park{list-style:none;display:grid;gap:6px;margin:0 0 8px;padding:0}
+.hc-park li{display:grid;grid-template-columns:1fr auto;gap:0 10px;align-items:center;padding:8px 10px;border-radius:10px;background:rgba(var(--inkc),.05)}
+.hc-park b{font-weight:500;font-size:.86rem}
+.hc-park small{grid-column:1;font-size:.74rem;color:var(--mute)}
+.hc-park a{grid-row:1/3;grid-column:2;font-size:.76rem;color:var(--rose-l);white-space:nowrap}
+.hc-pnote{display:block;font-size:.72rem;color:var(--mute)}
