@@ -734,3 +734,44 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
 @media(max-width:560px){.kc-grid{grid-template-columns:1fr}.kc-team{grid-template-columns:1fr}}
 .svc-faqall{padding:clamp(20px,4vw,40px) 0 clamp(60px,8vw,100px)}
 .svc-faqall .faq-side .btn{margin-top:4px}
+
+/* ---------- parking map (inline SVG from OpenStreetMap data) ---------- */
+.pmap{margin-top:clamp(50px,7vw,90px);scroll-margin-top:90px}
+.svc-park .pmap{margin-top:clamp(30px,5vw,60px)}
+.pm-head p{color:var(--mute);max-width:56ch;margin-top:12px}
+.pm-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(20px,3vw,40px);margin-top:26px;align-items:start}
+.pm-map{position:relative;border-radius:22px;overflow:hidden;border:1px solid var(--line);background:rgba(var(--inkc),.035)}
+.pm-svg{display:block;width:100%;height:auto}
+.pm-b{fill:rgba(var(--inkc),.07);stroke:none}
+.pm-r,.pm-rs,.pm-rp{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.pm-r{stroke:rgba(var(--inkc),.30);stroke-width:7}
+.pm-rs{stroke:rgba(var(--inkc),.16);stroke-width:3}
+.pm-rp{stroke:rgba(var(--inkc),.22);stroke-width:6;stroke-dasharray:2 6}
+.pm-lot{fill:rgba(181,129,114,.28);stroke:var(--rose);stroke-width:2;transition:fill .2s}
+.pm-kerb{fill:none;stroke:var(--rose);stroke-width:9;stroke-dasharray:10 7;stroke-linecap:butt;opacity:.85}
+.pm-lot.on{fill:rgba(181,129,114,.6)}
+.pm-kerb.on{opacity:1;stroke-width:12}
+.pm-st{font:500 13px var(--sans);fill:var(--mute);text-anchor:middle;letter-spacing:.04em;paint-order:stroke;stroke:var(--bg);stroke-width:4px}
+.pm-lm circle{fill:var(--bg);stroke:var(--mute);stroke-width:2}
+.pm-lm text{font:500 13px var(--sans);fill:var(--ink2);paint-order:stroke;stroke:var(--bg);stroke-width:4px}
+.pm-pin{cursor:pointer;outline:none}
+.pm-pin circle{fill:var(--rose);stroke:var(--bg);stroke-width:3;transition:transform .2s}
+.pm-pin text{font:600 13px var(--sans);fill:#fff;text-anchor:middle}
+.pm-pin.on circle,.pm-pin:focus-visible circle{transform:scale(1.18)}
+.pm-salon circle{fill:var(--ink);stroke:var(--bg);stroke-width:3}
+.pm-salon .pm-pulse{fill:var(--rose);stroke:none;opacity:.35;transform-origin:center;transform-box:fill-box;animation:pmPulse 2.4s ease-out infinite}
+.pm-sl{font:600 15px var(--serif);fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:5px;font-size:20px}
+@keyframes pmPulse{0%{transform:scale(.6);opacity:.5}100%{transform:scale(2.2);opacity:0}}
+@media(prefers-reduced-motion:reduce){.pm-salon .pm-pulse{animation:none}}
+.pm-leg{position:absolute;left:14px;bottom:12px;font-size:.74rem;color:var(--mute);display:flex;align-items:center;gap:7px;padding:.35em .8em;border-radius:999px;background:rgba(var(--sf),.85)}
+.pm-dot{width:10px;height:10px;border-radius:50%;background:var(--ink);display:inline-block}
+.pm-list{list-style:none;display:grid;gap:10px}
+.pm-item{display:flex;gap:14px;padding:16px;border-radius:16px;border:1px solid var(--line);cursor:pointer;transition:border-color .2s,background .2s;outline:none}
+.pm-item.on,.pm-item:focus-visible{border-color:var(--rose-l);background:rgba(181,129,114,.08)}
+.pm-n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--rose);color:#fff;font-weight:600;font-size:.8rem;display:grid;place-items:center}
+.pm-item b{display:block;font-family:var(--serif);font-weight:500;font-size:1.2rem;line-height:1.15;color:var(--ink)}
+.pm-item small{display:block;color:var(--mute);font-size:.84rem;line-height:1.45;margin-top:3px}
+.pm-meta{display:block;font-size:.78rem;color:var(--dim);margin-top:6px}
+.pm-meta a{color:var(--rose-l)}
+.pm-note{font-size:.75rem;color:var(--dim);margin-top:14px}
+@media(max-width:900px){.pm-grid{grid-template-columns:1fr}}

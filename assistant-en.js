@@ -44,7 +44,7 @@ const KB = [
   { id: 'address', k: ['address', 'where are you', 'where is the salon', 'where is hot cut', 'find you', 'location', 'located', 'søndergade', 'directions', 'how do i get there', 'city centre', 'city center', 'pedestrian street', 'map'],
     a: `You'll find us at <b>Søndergade 12, 7400 Herning</b>, in the centre of town. It's easy to combine with a stroll down the pedestrian street or a visit to a café.`, act: ['map', 'book'] },
   { id: 'parking', k: ['parking', 'car park', 'parking space', 'car'],
-    a: `The salon is in central Herning, where there are several public parking options. Call +45 97 12 60 60 and we will tell you where it is easiest to park near Søndergade 12.`, act: ['call', 'map'] },
+    a: `There is kerbside parking along Søndergade, the street you drive along to the salon, and a large car park just around the corner by Herning Library and the cinema. The station's underground car park is also a few minutes away. <a href="#parking">See the parking map</a> on the home or contact page, and check the signs for time limits.`, act: ['call', 'map'] },
   { id: 'contact', k: ['phone', 'phone number', 'telephone', 'number', 'call', 'ring', 'mail', 'email', 'e-mail', 'contact', 'get in touch', 'write'],
     a: `You can reach Hot Cut on:<br>📞 <b>97 12 60 60</b><br>✉️ <b>info@hotcut.dk</b><br>📍 Søndergade 12, 7400 Herning`, act: ['call', 'mail'] },
   { id: 'book', base: true, k: ['book', 'appointment', 'reserve', 'reservation', 'available', 'availability', 'time slot', 'free slot', 'online', 'schedule'],
