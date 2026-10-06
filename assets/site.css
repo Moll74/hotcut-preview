@@ -839,3 +839,21 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
 }
 @media(max-height:620px) and (min-width:761px){.scroll-hint{margin-top:12px}}
 @media(prefers-reduced-motion:reduce){.scroll-hint,.scroll-hint i::after{animation:none}}
+
+/* how booking works (treatment first, then login with mobile number) */
+.howto{margin-top:clamp(40px,6vw,70px);padding:clamp(24px,4vw,44px);border-radius:24px;border:1px solid var(--line);background:rgba(var(--inkc),.03);scroll-margin-top:90px}
+.howto-h{font-family:var(--serif);font-weight:400;font-size:clamp(1.8rem,3.2vw,2.6rem);line-height:1.08;margin-top:10px}
+.howto-h em{color:var(--rose-l)}
+.howto-head p{color:var(--mute);max-width:62ch;margin-top:12px}
+.howto-steps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+.howto-steps li{display:flex;gap:14px;padding:18px;border-radius:18px;background:rgba(var(--inkc),.04)}
+.hb-n{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--btn);color:#fff;font-weight:600;font-size:.85rem}
+.howto-steps b{display:block;font-family:var(--serif);font-weight:500;font-size:1.2rem;line-height:1.15}
+.howto-steps small{display:block;color:var(--mute);font-size:.85rem;margin-top:4px;line-height:1.45}
+.howto-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 30px;margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
+.howto-benefit{max-width:60ch;color:var(--ink2);font-size:.95rem}
+.howto-benefit b{color:var(--ink);font-weight:500}
+.howto-cta{display:flex;align-items:center;flex-wrap:wrap;gap:12px 18px;font-size:.88rem;color:var(--mute)}
+.howto-cta a:not(.btn){color:var(--rose-l)}
+.howto-link{color:var(--rose-l);border-bottom:1px solid rgba(224,176,161,.4);font-size:inherit}
+@media(max-width:860px){.howto-steps{grid-template-columns:1fr}}
