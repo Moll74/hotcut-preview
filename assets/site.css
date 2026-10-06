@@ -940,3 +940,16 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
   .dock-m .btn{padding:.85em .6em;font-size:.82rem;gap:.4em}
   .dock-m .btn svg{width:.95em;height:.95em}
 }
+
+/* phones: team photo with names right after the hero (the desktop fly-through shows it inside the hero) */
+.m-team{display:none}
+@media(max-width:760px){
+  .m-team{display:block;position:relative;margin:8px 16px 0;border-radius:22px;overflow:hidden;background:#0b0807;text-align:center;padding-bottom:20px}
+  .m-team figure{aspect-ratio:2/1.08}
+  .m-team img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;
+    -webkit-mask-image:linear-gradient(180deg,#000 62%,transparent 100%);mask-image:linear-gradient(180deg,#000 62%,transparent 100%)}
+  .m-team-cap{position:relative;margin-top:-34px;padding:0 16px}
+  .m-team h2{font-family:var(--serif);font-weight:400;font-size:1.6rem;line-height:1.05;color:#f4ebe4;text-shadow:0 2px 20px rgba(0,0,0,.6)}
+  .m-team h2 em{color:#e0b0a1}
+  .m-team .btn{margin-top:14px}
+}
