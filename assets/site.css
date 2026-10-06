@@ -681,11 +681,11 @@ footer .legal a:hover,footer .legal button:hover{color:var(--rose-l);border-colo
 @media(max-width:560px){.legal-page dl{grid-template-columns:1fr;gap:0}.legal-page dd{margin-bottom:8px}}
 
 /* header faces: link to the team */
-.hdr-r .tel .faces{cursor:pointer;transition:transform .25s}
-.hdr-r .tel .faces:hover{transform:translateY(-2px)}
-.hdr-r .tel .faces img{transition:margin .25s}
-.hdr-r .tel .faces:hover img{margin-left:-4px}
-.hdr-r .tel .faces:hover img:first-child{margin-left:0}
+.hdr-r .faces-link{cursor:pointer;transition:transform .25s}
+.hdr-r .faces-link:hover{transform:translateY(-2px)}
+.hdr-r .faces-link img{transition:margin .25s}
+.hdr-r .faces-link:hover img{margin-left:-4px}
+.hdr-r .faces-link:hover img:first-child{margin-left:0}
 
 /* ---------- service pages (same URLs as the old site) ---------- */
 .svc .post-hero.no-fig{grid-template-columns:1fr}
@@ -857,3 +857,38 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
 .howto-cta a:not(.btn){color:var(--rose-l)}
 .howto-link{color:var(--rose-l);border-bottom:1px solid rgba(224,176,161,.4);font-size:inherit}
 @media(max-width:860px){.howto-steps{grid-template-columns:1fr}}
+
+/* price list: Dame / Herre / Børn sub-labels + highlight when arriving from the Priser menu */
+.plist .psub{display:block;margin:14px 0 2px;padding:0;border:0;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.plist .psub:first-child{margin-top:4px}
+.plist [id]{scroll-margin-top:110px}
+.plist :target{animation:pTarget 2.2s ease-out}
+@keyframes pTarget{0%,40%{background:rgba(181,129,114,.22)}100%{background:transparent}}
+.mainnav .dd-m{max-height:calc(100vh - 100px);overflow:auto}
+
+/* header: faces -> team section; phone is its own call button (number on wide screens, round icon below 1180px) */
+.hdr-r .tel svg{width:17px;height:17px;flex:none;color:var(--rose-l)}
+@media(max-width:1180px){
+  .hdr-r .tel{width:40px;height:40px;justify-content:center;border-radius:50%;border:1px solid var(--line);background:rgba(var(--sf),.35)}
+  .hdr-r .tel:hover{border-color:var(--rose-l)}
+}
+@media(max-width:560px){.hdr-r .tel{display:none}}   /* phones: the bottom bar has 'Ring' */
+
+/* FAQ hub: one card per topic */
+.topic-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.topic-card{display:flex;flex-direction:column;padding:22px 22px 18px;border-radius:20px;border:1px solid var(--line);background:rgba(var(--inkc),.03);transition:border-color .2s}
+.topic-card:hover{border-color:rgba(224,176,161,.5)}
+.topic-card h2{font-family:var(--serif);font-weight:400;font-size:1.45rem;line-height:1.15}
+.topic-card h2 a{color:var(--ink)}
+.topic-n{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--rose-l);margin-top:6px}
+.topic-card ul{list-style:none;margin:14px 0 12px;display:grid;gap:8px;font-size:.88rem}
+.topic-card li a{color:var(--mute)}
+.topic-card li a:hover{color:var(--ink)}
+.topic-all{margin-top:auto;font-size:.84rem;color:var(--rose-l);font-weight:500}
+.topic-ask{margin-top:26px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:var(--mute)}
+.topic-more{margin-top:22px;font-size:.95rem}
+.topic-more a{color:var(--rose-l)}
+.faq-chips a[aria-current]{border-color:var(--rose-l);color:var(--rose-l)}
+.faq details[id]{scroll-margin-top:100px}
+@media(max-width:980px){.topic-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.topic-grid{grid-template-columns:1fr}}
