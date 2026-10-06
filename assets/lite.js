@@ -35,6 +35,16 @@ $('#themeT')?.addEventListener('click', () => {
   setTimeout(() => root.classList.remove('theme-anim'), 600);
 });
 
+/* computers can't always place a call: when a phone link is clicked on a mouse device, copy the number and say so (the call is still attempted) */
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="tel:"]'); if (!a || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  const num = '97 12 60 60', en = document.documentElement.lang.startsWith('en');
+  try { navigator.clipboard && navigator.clipboard.writeText(en ? '+45 97 12 60 60' : num); } catch (err) {}
+  let t = document.querySelector('.call-toast'); if (!t) { t = document.createElement('div'); t.className = 'call-toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+  t.innerHTML = en ? 'Call <b>+45 97 12 60 60</b> · the number is copied' : 'Ring <b>97 12 60 60</b> · nummeret er kopieret';
+  t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 4000);
+});
+
 /* mobile menu */
 const burger = $('#burger'), mnav = $('#mnav');
 const setMenu = open => { mnav.hidden = !open; root.classList.toggle('menu-open', open); burger.setAttribute('aria-expanded', open); };

@@ -953,3 +953,21 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
   .m-team h2 em{color:#e0b0a1}
   .m-team .btn{margin-top:14px}
 }
+
+/* header phone: never squeezed into several lines; social icons give way first */
+.hdr-r .tel{flex-shrink:0}
+.hdr-r .tel .tl{white-space:nowrap}
+.hdr-r > *{flex-shrink:0}
+@media(max-width:1520px){.hdr-r .socs{display:none}}
+@media(max-width:1340px){.hdr-r .tel .tl{display:none}
+  .hdr-r .tel{width:40px;height:40px;justify-content:center;border-radius:50%;border:1px solid var(--line);background:rgba(var(--sf),.35)}}
+/* computers: small confirmation when the number is clicked (a computer may not be able to call) */
+.call-toast{position:fixed;top:84px;right:clamp(16px,3vw,40px);z-index:130;padding:12px 16px;border-radius:14px;background:rgba(var(--sf),.97);border:1px solid var(--line);
+  box-shadow:0 18px 50px -18px rgba(0,0,0,.5);font-size:.86rem;color:var(--ink);opacity:0;transform:translateY(-6px);transition:opacity .25s,transform .25s;pointer-events:none}
+.call-toast.show{opacity:1;transform:none}
+.call-toast b{font-size:1.05rem}
+/* medium-wide screens: keep the whole header on one line */
+@media(max-width:1440px){.hdr-r .faces-link{display:none}}
+@media(max-width:1280px){.dd-hours .dd-t{max-width:150px}.dd-hours .dd-t .js-open{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}}
+/* the menu has grown (Priser/Blog/Spørgsmål dropdowns): switch to the burger menu below 1140px instead of 980px */
+@media(max-width:1140px){.mainnav{display:none}.burger{display:flex}}
