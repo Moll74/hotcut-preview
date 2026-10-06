@@ -892,3 +892,4 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
 .faq details[id]{scroll-margin-top:100px}
 @media(max-width:980px){.topic-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.topic-grid{grid-template-columns:1fr}}
+.dd-m .dd-h{display:block;padding:10px 14px 4px;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);font-weight:500}
