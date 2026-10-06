@@ -1,7 +1,7 @@
 :root{
   --bg:#0e0a08; --bg2:#15100d; --ink:#f4ebe4; --ink2:#e3d7cf; --mute:#b9a89d; --dim:#8a7a70;
   --rose:#b58172; --rose-h:#c8907f; --btn:#9c6656; --btn-h:#8a5949; --rose-l:#e0b0a1; --amber:#e0a35f; --ok:#8fcf9a; --line:rgba(244,235,228,.12);
-  --sf:14,10,8; --scr:11,8,7; --inkc:244,235,228; --logo:rgba(246,236,230,.95);
+  --sf:14,10,8; --scr:11,8,7; --inkc:244,235,228; --logo:#b58172;
   --tsh:0 2px 18px rgba(0,0,0,.9); --galbg:radial-gradient(ellipse 70% 55% at 50% 62%,#3a2519 0%,#160f0b 55%,#0e0a08 100%);
   --serif:"Cormorant Garamond",Georgia,serif; --sans:"DM Sans",system-ui,sans-serif;
   color-scheme:dark;
@@ -9,7 +9,7 @@
 :root[data-theme="light"]{
   --bg:#f7f1ec; --bg2:#efe6de; --ink:#2b1e18; --ink2:#46362e; --mute:#6e5c52; --dim:#94817a;
   --rose:#a8705f; --rose-h:#96604f; --btn:#94604f; --btn-h:#82513f; --rose-l:#94553f; --amber:#c27d2c; --ok:#3f9a55; --line:rgba(43,30,24,.13);
-  --sf:250,246,242; --scr:247,241,236; --inkc:43,30,24; --logo:#3a2820;
+  --sf:250,246,242; --scr:247,241,236; --inkc:43,30,24; --logo:#b58172;
   --tsh:0 1px 14px rgba(247,241,236,.9); --galbg:radial-gradient(ellipse 70% 55% at 50% 62%,#f3dfcf 0%,#efe6de 60%,#f7f1ec 100%);
   color-scheme:light;
 }
@@ -43,7 +43,7 @@ header{position:fixed;inset:0 0 auto;z-index:50;display:flex;align-items:center;
 header::before{content:"";position:absolute;inset:0 0 -40px;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(var(--scr),.85),rgba(var(--scr),.45) 55%,rgba(var(--scr),0));transition:opacity .35s}
 header.solid::before{opacity:0}
 header.solid{background:rgba(var(--sf),.86);backdrop-filter:blur(14px);padding-block:12px;border-bottom:1px solid var(--line)}
-header .logo{width:104px;color:var(--ink)}
+header .logo{width:104px;color:var(--logo)}
 .mainnav{display:flex;align-items:center;gap:26px;font-size:.84rem}
 .mainnav > a,.dd-t{opacity:.92;transition:color .2s}
 .mainnav > a:hover,.dd-t:hover,.dd.open .dd-t{color:var(--rose-l);opacity:1}
@@ -363,7 +363,7 @@ html.menu-open .dock,html.menu-open .hc-chat{display:none}
 .visit-photo img{width:100%;height:100%;object-fit:cover}
 @media(max-width:860px){.visit-grid{grid-template-columns:1fr}}
 footer{position:relative;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;padding:34px clamp(16px,4vw,48px) 34px;border-top:1px solid var(--line);font-size:.75rem;color:var(--dim)}
-footer .logo{width:86px;color:var(--rose)}
+footer .logo{width:86px;color:var(--logo)}
 
 /* sticky booking: floating pill on desktop, bottom bar on mobile */
 .dock{position:fixed;z-index:60;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .45s;opacity:0;transform:translateY(130%);pointer-events:none}
@@ -819,3 +819,23 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
 
 .pc-meta span{color:var(--mute)}
 .t247{background:var(--btn)!important}
+
+/* logo in Hot Cut's own colour (#B58172, as on hotcut.dk) in both themes */
+:root[data-theme="light"] .hero-ui .logo{filter:drop-shadow(0 4px 24px rgba(255,255,255,.55))}
+
+/* scroll hint: a clear pill under the hero copy (the old 1px line was hidden on phones and behind the review strip) */
+.scroll-cue{display:none!important}
+.scroll-hint{display:inline-flex;align-items:center;gap:10px;margin-top:22px;padding:.55em 1.1em .55em 1.25em;border-radius:999px;border:1px solid rgba(181,129,114,.55);
+  background:rgba(var(--sf),.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--ink);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;pointer-events:auto}
+.scroll-hint:hover{border-color:var(--rose-l)}
+.scroll-hint i{position:relative;width:14px;height:20px;border:1.6px solid var(--rose-l);border-radius:8px}
+.scroll-hint i::after{content:"";position:absolute;left:50%;top:4px;width:2px;height:5px;margin-left:-1px;border-radius:2px;background:var(--rose-l);animation:hintWheel 1.6s ease-in-out infinite}
+@keyframes hintWheel{0%{transform:translateY(0);opacity:1}70%{transform:translateY(7px);opacity:0}100%{transform:translateY(0);opacity:0}}
+.scroll-hint{animation:heroIn .7s cubic-bezier(.2,.7,.2,1) .45s both,hintBob 2.4s ease-in-out 1.6s infinite}
+@keyframes hintBob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@media(max-width:760px){
+  .scroll-hint{margin-top:14px;font-size:.7rem;padding:.45em .95em .45em 1.05em}
+  .scroll-hint i{width:12px;height:17px}
+}
+@media(max-height:620px) and (min-width:761px){.scroll-hint{margin-top:12px}}
+@media(prefers-reduced-motion:reduce){.scroll-hint,.scroll-hint i::after{animation:none}}
