@@ -1050,3 +1050,30 @@ footer{padding-bottom:120px}
   .qz-intro > p{display:none}
   .qz-top{margin-bottom:14px}
 }
+
+/* quiz result: 'Dit look 2026' trend card */
+.qz-look{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:center;padding:16px;border-radius:22px;border:1px solid rgba(224,176,161,.45);
+  background:linear-gradient(130deg,rgba(181,129,114,.2),rgba(181,129,114,.04));text-align:left;animation:qzIn .5s both}
+.qz-look figure{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:4/5}
+.qz-look img{width:100%;height:100%;object-fit:cover}
+.qz-look figcaption{position:absolute;left:8px;bottom:8px;padding:.25em .7em;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:.66rem;letter-spacing:.06em}
+.qz-look-k{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--rose-l)}
+.qz-look h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.6rem,3.4vw,2.2rem);line-height:1.05;margin-top:6px}
+.qz-look p{color:var(--ink2);margin-top:10px}
+.qz-look .qz-look-s{color:var(--mute);font-size:.86rem}
+.qz-src{margin-top:18px;font-size:.72rem;color:var(--dim);line-height:1.6}
+.qz-src a{color:var(--mute);text-decoration:underline}
+.qz-tile::after{content:"AI";position:absolute;top:8px;right:8px;padding:.15em .5em;border-radius:999px;background:rgba(0,0,0,.45);color:#fff;font-size:.6rem;letter-spacing:.08em}
+.qz-morph[hidden]{display:none}
+@media(max-width:560px){.qz-look{grid-template-columns:1fr}.qz-look figure{aspect-ratio:4/4.4}}
+/* quiz: more 2026 looks gallery */
+.qz-more-looks{margin-top:4px;padding:18px 16px;border-radius:22px;border:1px solid rgba(224,176,161,.3)}
+.qz-more-looks h3{font-family:var(--serif);font-weight:400;font-size:1.4rem}
+.qz-more-looks p{color:var(--mute);font-size:.86rem;margin-top:4px}
+.qz-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;margin-top:14px}
+.qz-gal-i{position:relative;padding:0;border:2px solid transparent;border-radius:14px;overflow:hidden;background:none;cursor:pointer;aspect-ratio:4/5;color:#fff;text-align:left;transition:border-color .2s,transform .2s}
+.qz-gal-i img{width:100%;height:100%;object-fit:cover;display:block}
+.qz-gal-i span{position:absolute;left:0;right:0;bottom:0;padding:22px 8px 7px;font-size:.72rem;line-height:1.2;background:linear-gradient(transparent,rgba(0,0,0,.7))}
+.qz-gal-i:hover{transform:translateY(-2px)}
+.qz-gal-i.on{border-color:var(--logo)}
+@media(max-width:560px){.qz-gal{grid-template-columns:repeat(3,1fr);gap:8px}}
