@@ -224,8 +224,8 @@ root.innerHTML = `
       <div><b>Hot Cut AI assistant</b><small><i></i>Replies instantly</small></div>
       <button class="hc-x" aria-label="Close chat">✕</button>
     </div>
-    <div class="hc-log" aria-live="polite"></div>
-    <div class="hc-chips"></div>
+    <div class="hc-log" aria-live="polite" data-lenis-prevent></div>
+    <div class="hc-chips" data-lenis-prevent></div>
     <form class="hc-form"><input type="text" placeholder="Type or speak …" aria-label="Type your question" autocomplete="off" maxlength="300"><button type="button" class="hc-mic" aria-label="Ask your question by voice" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></g></svg></button><button class="hc-send" aria-label="Send">➤</button></form>
     <p class="hc-note">AI assistant · answers based on hotcut.dk · if in doubt: call 97 12 60 60</p>
   </section>`;
@@ -248,7 +248,8 @@ function bubble(html, who, actions = []) {
   }
   log.appendChild(m);
   // long answers (e.g. the parking map) start at their top; short ones just scroll to the end
-  log.scrollTop = who === 'bot' && m.offsetHeight > log.clientHeight * .7 ? m.offsetTop - 8 : log.scrollHeight;
+  const top = m.getBoundingClientRect().top - log.getBoundingClientRect().top + log.scrollTop;   // position inside the scrolling log
+  log.scrollTop = who === 'bot' && m.offsetHeight > log.clientHeight * .7 ? top - 8 : log.scrollHeight;
 }
 function reply(q, spoken = false) {
   bubble(q.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c])), 'me');

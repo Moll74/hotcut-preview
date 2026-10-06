@@ -662,7 +662,7 @@ paintStatus(); setInterval(paintStatus, 60000);
 /* ---------- smooth scroll ---------- */
 let lenis;
 if (!reduce && window.Lenis) {
-  lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+  lenis = new Lenis({ lerp: 0.1, smoothWheel: true, prevent: node => !!node.closest('.hc-chat, .dd-m, .mnav, .cc, .cards, .brands, .posts, .rev-track, .pm-list') });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(t => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
@@ -1070,7 +1070,7 @@ const hcRevealInCarousel = id => { const t = id && document.getElementById(id); 
 document.addEventListener('click', e => { const a = e.target.closest('a[href*="#"]'); if (a && a.hash && a.pathname === location.pathname) setTimeout(() => hcRevealInCarousel(a.hash.slice(1)), 60); });
 if (location.hash) setTimeout(() => hcRevealInCarousel(location.hash.slice(1)), 700);
 };
-const hcBoot = () => { hcLoad('assets/vendor/gsap.min.js'); hcLoad('assets/vendor/ScrollTrigger.min.js'); hcLoad('assets/vendor/lenis.min.js', hcMain); hcLoad('assistant.js?v=202610071400'); };
+const hcBoot = () => { hcLoad('assets/vendor/gsap.min.js'); hcLoad('assets/vendor/ScrollTrigger.min.js'); hcLoad('assets/vendor/lenis.min.js', hcMain); hcLoad('assistant.js?v=202610071420'); };
 document.readyState === 'complete' ? hcBoot() : addEventListener('load', hcBoot, { once: true });
 </script>
 </body>
