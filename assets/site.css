@@ -821,7 +821,9 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
 .t247{background:var(--btn)!important}
 
 /* logo in Hot Cut's own colour (#B58172, as on hotcut.dk) in both themes */
-:root[data-theme="light"] .hero-ui .logo{filter:drop-shadow(0 4px 24px rgba(255,255,255,.55))}
+:root[data-theme="light"] .hero-ui .logo{filter:drop-shadow(0 0 .9px #b58172) drop-shadow(0 0 .9px #b58172) drop-shadow(0 0 .5px rgba(122,74,58,.8)) drop-shadow(0 3px 10px rgba(90,55,40,.12))}
+/* light theme: a fine edge in a deeper shade of the same colour keeps the thin script strokes crisp on cream */
+:root[data-theme="light"] header .logo,:root[data-theme="light"] footer .logo{filter:drop-shadow(0 0 .7px #b58172) drop-shadow(0 0 .7px #b58172) drop-shadow(0 0 .5px rgba(122,74,58,.9))}
 @media(min-width:761px){:root[data-theme="light"] .hero-ui::before{background:radial-gradient(ellipse 30% 30% at 50% 62%,rgba(var(--scr),.78),rgba(var(--scr),.4) 60%,rgba(var(--scr),0) 100%)}}
 
 /* scroll hint: a clear pill under the hero copy (the old 1px line was hidden on phones and behind the review strip) */
