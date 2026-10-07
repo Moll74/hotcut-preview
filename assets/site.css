@@ -101,7 +101,7 @@ html.menu-open .dock,html.menu-open .hc-chat{display:none}
 }
 @media(max-width:760px){
   .hero-ui{justify-content:flex-end;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
-  .hero-ui::before{background:linear-gradient(180deg,rgba(var(--scr),0) 34%,rgba(var(--scr),.88) 47%,rgba(var(--scr),.95) 100%)}
+  .hero-ui::before{background:linear-gradient(180deg,rgba(var(--scr),0) calc(var(--tb,40vh) - 6px),rgba(var(--scr),.88) calc(var(--tb,40vh) + 44px),rgba(var(--scr),.95) 100%)}
   .hero-ui .logo{width:54vw}
   .hero-ui h1{font-size:1.65rem;margin-top:4px}
   .hero-ui .sub{font-size:.9rem;margin-top:8px}
