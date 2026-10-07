@@ -39,6 +39,7 @@ const hoursTable = `<table class="hc-t"><tr><td>Mandag</td><td>09:00–15:00</td
  * k: trigger words/phrases (Danish, lowercase). Phrases score higher than single words.
  */
 const KB = [
+  { id: 'wish', k: ["ingen tid", "ingen ledig", "ingen ledige", "ingen tider", "fuldt booket", "fuld booket", "alt er booket", "optaget", "kan ikke finde", "finder ikke", "passer ikke", "ingen der passer", "venteliste", "afbud", "ønsketid", "ring mig op", "kontakt mig", "ring tilbage", "hurtigst muligt", "en anden tid", "andre tider"], a: '' },
   { id: 'hours', k: ['åbningstid', 'åbningstider', 'åbent', 'åben', 'lukket', 'lukker', 'åbner', 'hvornår har i', 'weekend', 'lørdag', 'søndag', 'mandag', 'torsdag', 'fredag', 'tirsdag', 'onsdag', 'i dag', 'i morgen', 'aftenåbent', 'sent'],
     a: () => `${status()}${hoursTable}<small>Åbningstiderne er vejledende.</small>`, act: ['book', 'call'] },
   { id: 'address', k: ['adresse', 'hvor ligger', 'hvor er i', 'find jer', 'finde jer', 'søndergade', 'beliggenhed', 'rutevejledning', 'kørselsvejledning', 'centrum', 'gågade', 'vej'],
@@ -155,7 +156,7 @@ const FAQ_STOP = new Set('jeg i du vi de det den en et er at og eller på til me
 const PRODUCT_IDS = new Set(['brands', 'olaplex', 'roze', 'sanzi', 'hairband', 'ghd', 'idhair', 'clipon']);
 const SHOP_NOTE = `<br><br><b>Kom forbi salonen</b> på Søndergade 12, så viser vi dig produkterne på produktvæggen og finder det, der passer til dit hår. Vil du vide, om vi har et bestemt produkt på lager, eller hvad det koster, så ring på 97 12 60 60.`;
 const FALLBACK = { a: `Det kan jeg desværre ikke svare sikkert på ud fra hjemmesiden. Ring til salonen på <b>97 12 60 60</b> eller skriv til info@hotcut.dk, så får du et præcist svar.`, act: ['call', 'mail'] };
-const CHIPS = ['Priser', 'Åbningstider', 'Book tid', 'Håranalyse', 'Hvilke produkter sælger I?', 'Extensions', 'Balayage', 'Herreklip', 'Hvor ligger I?', 'Hvor kan jeg parkere?'];
+const CHIPS = ["Ingen tid, der passer?", 'Priser', 'Åbningstider', 'Book tid', 'Håranalyse', 'Hvilke produkter sælger I?', 'Extensions', 'Balayage', 'Herreklip', 'Hvor ligger I?', 'Hvor kan jeg parkere?'];
 
 /* ---------- matching ---------- */
 const norm = s => s.toLowerCase().normalize('NFC').replace(/[^\p{L}\p{N}\s-]/gu, ' ').replace(/\s+/g, ' ').trim();
@@ -251,6 +252,9 @@ function bubble(html, who, actions = []) {
 }
 function reply(q, spoken = false) {
   bubble(q.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c])), 'me');
+  spokeLast = spoken;
+  if (wish) { wishStep(q); return; }                                // inside the wish-time flow every answer goes there
+  if (q === WL.chip || answer(q).id === 'wish') { startWish(); return; }
   const typing = document.createElement('div'); typing.className = 'hc-msg bot hc-typing'; typing.innerHTML = '<i></i><i></i><i></i>';
   log.appendChild(typing); log.scrollTop = log.scrollHeight;
   const e = answer(q);
@@ -371,5 +375,91 @@ setInterval(() => {                                // the labelled button rocks 
   fab.classList.remove('wiggle'); void fab.offsetWidth; fab.classList.add('wiggle');
 }, 8000);
 setInterval(() => { if (isPhone()) nudgePhone(); }, 8000);   // keep the phone button gently alive
-window.hcAssistant = { answer: q => { const e = answer(q); return e.id || 'fallback'; }, open: () => toggle(true), greet: showGreet, ping: () => popBubble('ping') };
+
+/* ---------- "no time that suits you?": a guided wish-time request in the chat ----------
+ * Asks for treatment, 2–3 preferred times, name, mobile and a note (typed, spoken or tapped), then shows
+ * a summary and "sends" it. In the mockup nothing leaves the browser: the SMS to the salon and the receipt to the
+ * client are shown as a demo. Production: POST to a small serverless function that sends both texts through a
+ * Danish SMS gateway (e.g. GatewayAPI) and/or emails the salon, and deletes the request when it is closed. */
+const WL = {"chip": "Ingen tid, der passer?", "kw": ["ingen tid", "ingen ledig", "ingen ledige", "ingen tider", "fuldt booket", "fuld booket", "alt er booket", "optaget", "kan ikke finde", "finder ikke", "passer ikke", "ingen der passer", "venteliste", "afbud", "ønsketid", "ring mig op", "kontakt mig", "ring tilbage", "hurtigst muligt", "en anden tid", "andre tider"], "intro": "Det finder vi ud af sammen 🙌 Fortæl mig, hvad du skal have lavet, og hvornår det passer dig. Så giver jeg salonen besked, og du får en SMS med et tidspunkt. Du kan skrive, tale (🎤) eller trykke.", "askTreat": "Hvad skal du have lavet?", "treat": ["Dameklip", "Herreklip", "Farve eller balayage", "Extensions", "Opsætning til fest", "Andet"], "askTime": "Hvornår passer det dig? Giv mig gerne <b>2–3 forslag</b>, fx “torsdag eftermiddag” eller “fredag 9–12”.", "timeChips": ["Hverdage formiddag", "Hverdage eftermiddag", "Torsdag aften", "Første ledige tid"], "more": "Noteret ✔️ Har du et forslag mere? Flere forslag gør det lettere at finde en tid.", "noMore": "Nej, det er fint", "askName": "Hvad hedder du?", "askPhone": "Tak, {n}! Hvilket mobilnummer må vi sende en SMS til?", "badPhone": "Det ligner ikke et dansk mobilnummer. Skriv de 8 cifre, fx 12 34 56 78.", "askNote": "Er der noget, vi skal vide? Fx hvem du plejer at gå hos, eller om det haster.", "noNote": "Nej tak", "sumT": "Din forespørgsel", "lTreat": "Behandling", "lTimes": "Ønsketider", "lName": "Navn", "lPhone": "Mobil", "lNote": "Bemærkning", "consent": "Når du trykker <b>Send</b>, må Hot Cut kontakte dig på SMS om denne forespørgsel. Vi sletter oplysningerne, når den er afsluttet. <a href=\"{p}\" target=\"_blank\" rel=\"noopener\">Privatlivspolitik</a>", "send": "Send forespørgsel", "edit": "Start forfra", "cancel": "Afbryd", "cancelled": "Helt i orden, jeg har ikke sendt noget. Du kan altid ringe på <b>97 12 60 60</b>.", "done": "Tak, {n}! ✅ Din forespørgsel er sendt til salonen. Vi finder en tid ud fra dine forslag og sender en SMS til <b>{p}</b>, typisk samme dag i åbningstiden.", "demo": "Demo · SMS sendes ikke endnu", "toSalon": "SMS til salonen", "toClient": "Kvittering til dig", "smsSalon": "Ny ønsketid fra hotcut.dk 💇 {n}, {p}. {t}. Ønsker: {w}.{x} Svar kunden på SMS eller ring.", "smsClient": "Hej {f} 👋 Tak for din forespørgsel hos Hot Cut. Vi finder en tid og skriver til dig hurtigst muligt. Mvh Hot Cut · 97 12 60 60", "demoNote": "Ved lancering kobles en dansk SMS-tjeneste på (fx GatewayAPI), så beskederne sendes automatisk. Salonen kan også få forespørgslen på mail.", "note": " Note: ", "ph": {"treat": "Fx dameklip og farve …", "time": "Fx torsdag eftermiddag …", "more": "Et forslag mere …", "name": "Dit navn …", "phone": "12 34 56 78", "note": "Skriv en bemærkning …", "confirm": "Skriv “send” eller tryk …"}, "phDefault": "Skriv eller tal …", "yes": ["send", "ja", "ok", "okay", "send den", "ja tak"], "no": ["nej", "nej tak", "det er fint", "færdig", "ikke mere", "nope"], "stop": ["afbryd", "annuller", "stop", "fortryd"], "retT": "Fandt du en tid, der passer? 🙂", "retS": "Hvis ikke, så fortæl mig, hvornår du kan. Så giver jeg salonen besked, og du får en SMS.", "retNo": "Nej, hjælp mig", "retYes": "Ja, tak!", "close": "Luk", "priv": "legal/privatlivspolitik.html"};
+const PRIV = ((document.currentScript && document.currentScript.src) || '').replace(/assistant(-en)?\.js.*$/, '') + WL.priv;
+let wish = null, spokeLast = false;
+function setChips(list, primary) {
+  chips.innerHTML = '';
+  (list || CHIPS).forEach(c => { const b = document.createElement('button'); b.type = 'button'; b.textContent = c; if (c === primary) b.className = 'p'; b.onclick = () => reply(c); chips.appendChild(b); });
+  chips.scrollLeft = 0;
+}
+function botSay(html, delay = 520) {
+  const typing = document.createElement('div'); typing.className = 'hc-msg bot hc-typing'; typing.innerHTML = '<i></i><i></i><i></i>';
+  log.appendChild(typing); log.scrollTop = log.scrollHeight;
+  return new Promise(res => setTimeout(() => { typing.remove(); bubble(html, 'bot'); if (spokeLast) speak(html); res(); }, delay));
+}
+function wishUI(step, list, primary) {
+  wish.step = step; setChips(list ? [...list, WL.cancel] : [WL.cancel], primary);
+  input.placeholder = WL.ph[step] || WL.phDefault; input.inputMode = step === 'phone' ? 'tel' : 'text';
+}
+function startWish() {
+  wish = { step: 'treat', d: { times: [] } }; track('wish_start');
+  botSay(WL.intro).then(() => botSay(WL.askTreat, 380)).then(() => wishUI('treat', WL.treat));
+}
+function endWish() { wish = null; setChips(); input.placeholder = WL.phDefault; input.inputMode = 'text'; }
+const isAny = (q, list) => list.includes(norm(q));
+function wishStep(q) {
+  const d = wish.d, txt = q.trim().slice(0, 160);
+  if (isAny(q, WL.stop) || q === WL.cancel) { endWish(); track('wish_cancel'); return botSay(WL.cancelled); }
+  switch (wish.step) {
+    case 'treat': d.treat = txt; wishUI('time', WL.timeChips); return botSay(WL.askTime);
+    case 'time': d.times.push(txt); wishUI('more', [...WL.timeChips.filter(c => !d.times.includes(c)), WL.noMore], WL.noMore); return botSay(WL.more);
+    case 'more':
+      if (q === WL.noMore || isAny(q, WL.no)) { wishUI('name'); return botSay(WL.askName); }
+      d.times.push(txt);
+      if (d.times.length >= 3) { wishUI('name'); return botSay(WL.askName); }
+      wishUI('more', [...WL.timeChips.filter(c => !d.times.includes(c)), WL.noMore], WL.noMore); return botSay(WL.more);
+    case 'name': d.name = txt.slice(0, 40); wishUI('phone'); return botSay(WL.askPhone.replace('{n}', esc(d.name.split(' ')[0])));
+    case 'phone': {
+      let n = q.replace(/\D/g, ''); if (n.length === 10 && n.startsWith('45')) n = n.slice(2); if (n.length === 12 && n.startsWith('0045')) n = n.slice(4);
+      if (n.length !== 8) return botSay(WL.badPhone);
+      d.phone = n.replace(/(\d{2})(?=\d)/g, '$1 '); wishUI('note', [WL.noNote]); return botSay(WL.askNote);
+    }
+    case 'note': d.note = (q === WL.noNote || isAny(q, WL.no)) ? '' : txt; return summary();
+    case 'confirm':
+      if (q === WL.send || isAny(q, WL.yes)) return sendWish();
+      if (q === WL.edit) { endWish(); return startWish(); }
+      return botSay(WL.consent.replace('{p}', PRIV));
+  }
+}
+function summary() {
+  const d = wish.d, row = (l, v) => v ? `<dt>${l}</dt><dd>${v}</dd>` : '';
+  wishUI('confirm', [WL.send, WL.edit], WL.send);
+  return botSay(`<div class="hc-wish"><b>${WL.sumT}</b><dl>${row(WL.lTreat, esc(d.treat))}${row(WL.lTimes, d.times.map((t, i) => `${i + 1}. ${esc(t)}`).join('<br>'))}${row(WL.lName, esc(d.name))}${row(WL.lPhone, d.phone)}${row(WL.lNote, esc(d.note))}</dl><small>${WL.consent.replace('{p}', PRIV)}</small></div>`);
+}
+function sendWish() {
+  const d = wish.d; endWish();
+  track('wish_request', { wish_treatment: d.treat, wish_times: d.times.length });
+  const first = esc(d.name.split(' ')[0]);
+  const sms = WL.smsSalon.replace('{n}', esc(d.name)).replace('{p}', d.phone).replace('{t}', esc(d.treat))
+    .replace('{w}', d.times.map((t, i) => `${i + 1}) ${esc(t)}`).join(' ')).replace('{x}', d.note ? WL.note + esc(d.note) + '.' : '');
+  return botSay(WL.done.replace('{n}', first).replace('{p}', d.phone), 900).then(() => {
+    bubble(`<div class="hc-sms"><span class="hc-demo">${WL.demo}</span><div class="sms"><small>${WL.toSalon}</small><p>${sms}</p></div><div class="sms me"><small>${WL.toClient}</small><p>${WL.smsClient.replace('{f}', first)}</p></div><small>${WL.demoNote}</small></div>`, 'bot');
+  });
+}
+/* back from the booking system (opens in a new tab): ask once whether they found a time */
+let bookAt = 0;
+document.addEventListener('click', e => { if (e.target.closest('a[href*="bestilling.nu"]')) bookAt = Date.now(); }, true);
+const ret = document.createElement('div'); ret.className = 'hc-return'; ret.hidden = true; ret.setAttribute('role', 'status');
+ret.innerHTML = `<button class="hc-bx" type="button" aria-label="${WL.close}">✕</button><b>${WL.retT}</b><small>${WL.retS}</small><div><button type="button" class="p" data-r="no">${WL.retNo}</button><button type="button" data-r="yes">${WL.retYes}</button></div>`;
+root.appendChild(ret);
+function hideReturn() { ret.classList.remove('show'); setTimeout(() => ret.hidden = true, 300); }
+ret.addEventListener('click', e => {
+  const r = e.target.closest('[data-r]')?.dataset.r; if (!r && !e.target.closest('.hc-bx')) return;
+  hideReturn(); track('wish_return', { answer: r || 'closed' });
+  if (r === 'no') { toggle(true); if (!wish) startWish(); }
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || !bookAt || Date.now() - bookAt < 5000 || wish) return;
+  bookAt = 0; snoozeUntil = Date.now() + 90000; hideGreet();
+  ret.hidden = false; requestAnimationFrame(() => ret.classList.add('show')); track('wish_return_shown');
+  clearTimeout(window.__hcRet); window.__hcRet = setTimeout(hideReturn, 25000);
+});
+window.hcAssistant = { wish: () => { toggle(true); if (!wish) startWish(); },  answer: q => { const e = answer(q); return e.id || 'fallback'; }, open: () => toggle(true), greet: showGreet, ping: () => popBubble('ping') };
 })();
