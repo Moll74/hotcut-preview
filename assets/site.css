@@ -822,6 +822,7 @@ footer .svc-foot{order:7;border-top:0;padding-top:6px}
 
 /* logo in Hot Cut's own colour (#B58172, as on hotcut.dk) in both themes */
 :root[data-theme="light"] .hero-ui .logo{filter:drop-shadow(0 4px 24px rgba(255,255,255,.55))}
+@media(min-width:761px){:root[data-theme="light"] .hero-ui::before{background:radial-gradient(ellipse 30% 30% at 50% 62%,rgba(var(--scr),.78),rgba(var(--scr),.4) 60%,rgba(var(--scr),0) 100%)}}
 
 /* scroll hint: a clear pill under the hero copy (the old 1px line was hidden on phones and behind the review strip) */
 .scroll-cue{display:none!important}
