@@ -1,0 +1,265 @@
+{
+  "_note": "Edit prices here only. Run tools/build.py (or push to GitHub) and every page, the assistant, the FAQ and the schema data update.",
+  "prices": {
+    "dameklip": {
+      "kr": 520,
+      "da": "Dameklip, vask og føn",
+      "en": "Women's cut, wash and blow-dry"
+    },
+    "pandehaar": {
+      "kr": 89,
+      "da": "Pandehår",
+      "en": "Fringe"
+    },
+    "undercut": {
+      "kr": 200,
+      "da": "Undercut",
+      "en": "Undercut"
+    },
+    "vask_foen": {
+      "kr": 350,
+      "da": "Vask/føn",
+      "en": "Wash/blow-dry"
+    },
+    "haarkur": {
+      "kr": 159,
+      "da": "Luksus hårkur m. hovedbundsmassage (ved klip)",
+      "en": "Luxury treatment with scalp massage (with a cut)"
+    },
+    "herreklip": {
+      "kr": 370,
+      "da": "Herreklip",
+      "en": "Men's cut"
+    },
+    "herreklip_krans": {
+      "kr": 310,
+      "da": "Herreklip krans",
+      "en": "Men's cut “krans”"
+    },
+    "maskinklip": {
+      "kr": 200,
+      "da": "Maskinklip",
+      "en": "Clipper cut"
+    },
+    "skaeg": {
+      "kr": 150,
+      "da": "Trimning af skæg",
+      "en": "Beard trim"
+    },
+    "boern_0_3": {
+      "kr": 240,
+      "da": "Børneklip 0–3 år",
+      "en": "Children's cut age 0–3"
+    },
+    "boern_4_8": {
+      "kr": 290,
+      "da": "Børneklip 4–8 år",
+      "en": "Children's cut age 4–8"
+    },
+    "pigeklip": {
+      "kr": 390,
+      "da": "Pigeklip 9–12 år",
+      "en": "Girls' cut age 9–12"
+    },
+    "drengeklip": {
+      "kr": 310,
+      "da": "Drengeklip 9–12 år",
+      "en": "Boys' cut age 9–12"
+    },
+    "helfarve_kort": {
+      "kr": 650,
+      "da": "Helfarve, kort hår",
+      "en": "Full colour, short hair"
+    },
+    "helfarve_mellem": {
+      "kr": 1050,
+      "da": "Helfarve, mellemlangt hår",
+      "en": "Full colour, medium-length hair"
+    },
+    "helfarve_lang": {
+      "kr": 1200,
+      "da": "Helfarve, langt hår",
+      "en": "Full colour, long hair"
+    },
+    "bundfarve": {
+      "kr": 650,
+      "da": "Bundfarve",
+      "en": "Root colour"
+    },
+    "bundfarve_lang": {
+      "kr": 750,
+      "da": "Bundfarve, langt hår",
+      "en": "Root colour, long hair"
+    },
+    "helfarve_refl_kort": {
+      "kr": 800,
+      "da": "Helfarve m. reflekser, kort hår",
+      "en": "Full colour with highlights, short hair"
+    },
+    "helfarve_refl_mellem": {
+      "kr": 1300,
+      "da": "Helfarve m. reflekser, mellemlangt hår",
+      "en": "Full colour with highlights, medium-length hair"
+    },
+    "helfarve_refl_lang": {
+      "kr": 1600,
+      "da": "Helfarve m. reflekser, langt hår",
+      "en": "Full colour with highlights, long hair"
+    },
+    "refl_stanniol_kort": {
+      "kr": 800,
+      "da": "Reflekser m. stanniol, kort hår",
+      "en": "Foil highlights, short hair"
+    },
+    "refl_stanniol_mellem": {
+      "kr": 1200,
+      "da": "Reflekser m. stanniol, mellemlangt hår",
+      "en": "Foil highlights, medium-length hair"
+    },
+    "refl_stanniol_lang": {
+      "kr": 1400,
+      "da": "Reflekser m. stanniol, langt hår",
+      "en": "Foil highlights, long hair"
+    },
+    "refl_skilning": {
+      "kr": 950,
+      "da": "Reflekser over skilning",
+      "en": "Highlights along the parting"
+    },
+    "refl_haette": {
+      "kr": 800,
+      "da": "Reflekser m. hætte",
+      "en": "Cap highlights"
+    },
+    "balayage": {
+      "kr": 1450,
+      "da": "Balayage",
+      "en": "Balayage"
+    },
+    "balayage_toning": {
+      "kr": 1900,
+      "da": "Balayage m. eftertoning",
+      "en": "Balayage with toning"
+    },
+    "babylights": {
+      "kr": 1800,
+      "da": "Babylights",
+      "en": "Babylights"
+    },
+    "babylights_toning": {
+      "kr": 2250,
+      "da": "Babylights m. eftertoning",
+      "en": "Babylights with toning"
+    },
+    "farve_herre": {
+      "kr": 250,
+      "da": "10 minutters farve, herre",
+      "en": "10-minute colour, men"
+    },
+    "perm_kort": {
+      "kr": 1400,
+      "da": "Permanent m. klip, kort hår",
+      "en": "Perm with cut, short hair"
+    },
+    "perm_mellem": {
+      "kr": 1500,
+      "da": "Permanent m. klip, mellemlangt hår",
+      "en": "Perm with cut, medium-length hair"
+    },
+    "perm_lang": {
+      "kr": 1600,
+      "da": "Permanent m. klip, langt hår",
+      "en": "Perm with cut, long hair"
+    },
+    "keratin_mellem": {
+      "kr": 2000,
+      "da": "Keratin, mellemlangt hår",
+      "en": "Keratin, medium-length hair"
+    },
+    "keratin_lang": {
+      "kr": 2800,
+      "da": "Keratin, langt hår",
+      "en": "Keratin, long hair"
+    },
+    "extensions": {
+      "kr": 3600,
+      "da": "Extensions (fra)",
+      "en": "Extensions (from)"
+    },
+    "opsaetning_lille": {
+      "kr": 500,
+      "da": "Håropsætning, lille",
+      "en": "Updo, small"
+    },
+    "opsaetning_stor": {
+      "kr": 750,
+      "da": "Håropsætning, stor",
+      "en": "Updo, large"
+    },
+    "brudeopsaetning": {
+      "kr": 1600,
+      "da": "Brudeopsætning",
+      "en": "Bridal updo"
+    },
+    "proeveopsaetning": {
+      "kr": 500,
+      "da": "Prøveopsætning",
+      "en": "Trial updo"
+    },
+    "konfirmation": {
+      "kr": 750,
+      "da": "Konfirmationsopsætning",
+      "en": "Confirmation updo"
+    },
+    "makeup_lille": {
+      "kr": 300,
+      "da": "Makeup, lille",
+      "en": "Make-up, small"
+    },
+    "makeup_stor": {
+      "kr": 600,
+      "da": "Makeup, stor",
+      "en": "Make-up, large"
+    },
+    "bryn_rettet": {
+      "kr": 100,
+      "da": "Bryn rettet (voks/pincet)",
+      "en": "Brows shaped (wax/tweezers)"
+    },
+    "bryn_farvet": {
+      "kr": 100,
+      "da": "Bryn farvet",
+      "en": "Brows tinted"
+    },
+    "vipper_farvet": {
+      "kr": 150,
+      "da": "Vipper farvet",
+      "en": "Lashes tinted"
+    },
+    "bryn_vipper_pakke": {
+      "kr": 300,
+      "da": "Pakke: bryn & vipper farvet og rettet",
+      "en": "Package: brows & lashes tinted and shaped"
+    },
+    "browlam": {
+      "kr": 450,
+      "da": "Browlamination uden farve",
+      "en": "Brow lamination without tint"
+    },
+    "browlam_farve": {
+      "kr": 500,
+      "da": "Browlamination med farve",
+      "en": "Brow lamination with tint"
+    },
+    "analyse": {
+      "kr": 100,
+      "da": "Hår- og hovedbundsanalyse",
+      "en": "Hair and scalp analysis"
+    },
+    "analyse_graense": {
+      "kr": 400,
+      "da": "Køb for mindst (så trækkes analysen fra)",
+      "en": "Spend at least (analysis deducted)"
+    }
+  }
+}
