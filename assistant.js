@@ -179,7 +179,32 @@ function faqMatch(q) {
   return best && best.sc >= 4 ? best : null;
 }
 const esc = t => t.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+
+/* ---------- price guard ----------
+   The assistant only repeats single prices exactly as the price list shows them.
+   It never adds prices together or estimates a price for someone's own hair:
+   combinations, totals and individual colour work always go to the salon. */
+const Q_PRICE = /(?<!\p{L})(pris|priser|prisen|koster|kost|kr|kroner|beløb|betale|regning|tilbud|samlet|i alt|tilsammen|hvor meget|hvad bliver|hvad løber)(?!\p{L})/u;
+const Q_TOTAL = /(?<!\p{L})(samlet|i alt|tilsammen|plus|kombineret|kombination|pakkepris|hele pakken)(?!\p{L})/u;
+const Q_OWN = /(?<!\p{L})(mit hår|mine hår|min farve|mit lange|mit korte|mit tykke|mit tynde|mit grå|tykt|tykke|tyndt|meget hår|fra sort|fra mørk|mørkt hår|grå hår|farvekorrektion|afrens|rette op|ændre farve|skifte farve|lysere end|helt lys|platin)(?!\p{L})/u;
+// each service maps to a family; a question that names two families asks for a combination
+const Q_SERVICES = { klip: 'klip', dameklip: 'dame', pandehår: 'dame', undercut: 'dame', hårkur: 'dame', herreklip: 'herre', maskinklip: 'herre', skæg: 'herre',
+  børneklip: 'barn', pigeklip: 'barn', drengeklip: 'barn', helfarve: 'farve', bundfarve: 'farve', reflekser: 'farve', striber: 'farve', balayage: 'farve',
+  babylights: 'farve', farve: 'farve', extension: 'ext', hairband: 'ext', keratin: 'keratin', permanent: 'perm', opsætning: 'updo', brudeopsætning: 'updo',
+  prøveopsætning: 'updo', konfirmationsopsætning: 'updo', makeup: 'makeup', 'make-up': 'makeup', bryn: 'brow', vipper: 'brow', browlamination: 'brow',
+  browlift: 'brow', 'lash lift': 'brow', analyse: 'analyse', håranalyse: 'analyse' };
+const QUOTE = { id: 'quote', a: `Faste priser fra prislisten kan jeg godt vise dig, men en <b>samlet pris for flere behandlinger</b> eller en pris tilpasset netop dit hår kan jeg ikke give her. Den afhænger af dit hår, og hvad der skal laves.<br><br>Ring til salonen på <b>97 12 60 60</b> eller skriv til info@hotcut.dk, så får du en konkret pris. Rådgivningen er gratis.`, act: ['call', 'mail', 'prices'] };
+function needsQuote(q) {
+  const t = ' ' + norm(q) + ' ';
+  if (!Q_PRICE.test(t)) return false;
+  const terms = Object.keys(Q_SERVICES).filter(s => t.includes(' ' + s)), fam = new Set(terms.map(s => Q_SERVICES[s]));
+  // two add-ons inside one family ("herreklip og skæg") are a combination too; colour and brow terms describe one listed service
+  const sameFamilyCombo = terms.filter(s => !['farve', 'brow'].includes(Q_SERVICES[s])).length >= 2;
+  return fam.size >= 2 || sameFamilyCombo || Q_TOTAL.test(t) || (fam.size >= 1 && Q_OWN.test(t));
+}
+
 function answer(q) {
+  if (needsQuote(q)) return QUOTE;
   const t = ' ' + norm(q) + ' ', toks = norm(q).split(' ').filter(Boolean).map(stem);
   const scored = KB.map(e => {
     let sc = 0;

@@ -181,7 +181,36 @@ function faqMatch(q) {
   return best && best.sc >= 4 ? best : null;
 }
 const esc = t => t.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+
+/* ---------- price guard ----------
+   The assistant only repeats single prices exactly as the price list shows them.
+   It never adds prices together or estimates a price for someone's own hair:
+   combinations, totals and individual colour work always go to the salon. */
+const Q_PRICE = /(?<!\p{L})(price|prices|priced|cost|costs|how much|dkk|kr|pay|charge|quote|estimate|total|altogether|in total)(?!\p{L})/u;
+const Q_TOTAL = /(?<!\p{L})(total|altogether|in total|combined|combination|package price|all together|plus)(?!\p{L})/u;
+const Q_OWN = /(?<!\p{L})(my hair|my colour|my color|my long|my short|my thick|my thin|my grey|my gray|thick hair|thin hair|lots of hair|from black|from dark|dark hair|grey hair|gray hair|colour correction|color correction|change colour|change color|go lighter|go blonde|platinum)(?!\p{L})/u;
+// each service maps to a family; a question that names two families asks for a combination
+const Q_SERVICES = { cut: 'cut', haircut: 'cut', women: 'women', womens: 'women', fringe: 'women', bangs: 'women', undercut: 'women', treatment: 'women',
+  men: 'men', mens: 'men', clipper: 'men', beard: 'men', children: 'kids', kids: 'kids', child: 'kids', girls: 'kids', boys: 'kids',
+  colour: 'colour', color: 'colour', highlights: 'colour', balayage: 'colour', babylights: 'colour', roots: 'colour', extension: 'ext', hairband: 'ext',
+  keratin: 'keratin', perm: 'perm', updo: 'updo', bridal: 'updo', wedding: 'updo', confirmation: 'updo', trial: 'updo', 'make-up': 'makeup', makeup: 'makeup',
+  brow: 'brow', brows: 'brow', eyebrow: 'brow', lash: 'brow', lashes: 'brow', analysis: 'analysis' };
+const QUOTE = { id: 'quote', a: `I can show you the fixed prices from the price list, but I can't give a <b>combined price for several treatments</b> or a price tailored to your hair here. It depends on your hair and what needs doing.<br><br>Call the salon on <b>97 12 60 60</b> or write to info@hotcut.dk and you'll get a concrete price. Advice is free.`, act: ['call', 'mail', 'prices'] };
+function needsQuote(q) {
+  const t = ' ' + norm(q) + ' ';
+  if (!Q_PRICE.test(t)) return false;
+  const terms = Object.keys(Q_SERVICES).filter(s => new RegExp('(?<!\\p{L})' + norm(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?!\\p{L})', 'u').test(t));
+  const fam = new Set(terms.map(s => Q_SERVICES[s]));
+  // the generic word "cut" next to "women's"/"men's"/"children's" names one service, not two
+  if (fam.has('cut') && (fam.has('women') || fam.has('men') || fam.has('kids'))) fam.delete('cut');
+  // two add-ons inside one family ("men's cut and beard") are a combination too; colour and brow terms describe one listed service
+  const own = terms.filter(s => !['colour', 'brow', 'cut'].includes(Q_SERVICES[s]));
+  const sameFamilyCombo = new Set(own).size >= 2;
+  return fam.size >= 2 || sameFamilyCombo || Q_TOTAL.test(t) || (fam.size >= 1 && Q_OWN.test(t));
+}
+
 function answer(q) {
+  if (needsQuote(q)) return QUOTE;
   const t = ' ' + norm(q) + ' ', toks = norm(q).split(' ').filter(Boolean).map(stem);
   const scored = KB.map(e => {
     let sc = 0;
