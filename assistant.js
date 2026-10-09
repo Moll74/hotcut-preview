@@ -179,7 +179,32 @@ function faqMatch(q) {
   return best && best.sc >= 4 ? best : null;
 }
 const esc = t => t.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+
+/* ---------- price guard ----------
+   The assistant only repeats single prices exactly as the price list shows them.
+   It never adds prices together or estimates a price for someone's own hair:
+   combinations, totals and individual colour work always go to the salon. */
+const Q_PRICE = /(?<!\p{L})(pris|priser|prisen|koster|kost|kr|kroner|beløb|betale|regning|tilbud|samlet|i alt|tilsammen|hvor meget|hvad bliver|hvad løber)(?!\p{L})/u;
+const Q_TOTAL = /(?<!\p{L})(samlet|i alt|tilsammen|plus|kombineret|kombination|pakkepris|hele pakken)(?!\p{L})/u;
+const Q_OWN = /(?<!\p{L})(mit hår|mine hår|min farve|mit lange|mit korte|mit tykke|mit tynde|mit grå|tykt|tykke|tyndt|meget hår|fra sort|fra mørk|mørkt hår|grå hår|farvekorrektion|afrens|rette op|ændre farve|skifte farve|lysere end|helt lys|platin)(?!\p{L})/u;
+// each service maps to a family; a question that names two families asks for a combination
+const Q_SERVICES = { klip: 'klip', dameklip: 'dame', pandehår: 'dame', undercut: 'dame', hårkur: 'dame', herreklip: 'herre', maskinklip: 'herre', skæg: 'herre',
+  børneklip: 'barn', pigeklip: 'barn', drengeklip: 'barn', helfarve: 'farve', bundfarve: 'farve', reflekser: 'farve', striber: 'farve', balayage: 'farve',
+  babylights: 'farve', farve: 'farve', extension: 'ext', hairband: 'ext', keratin: 'keratin', permanent: 'perm', opsætning: 'updo', brudeopsætning: 'updo',
+  prøveopsætning: 'updo', konfirmationsopsætning: 'updo', makeup: 'makeup', 'make-up': 'makeup', bryn: 'brow', vipper: 'brow', browlamination: 'brow',
+  browlift: 'brow', 'lash lift': 'brow', analyse: 'analyse', håranalyse: 'analyse' };
+const QUOTE = { id: 'quote', a: `Faste priser fra prislisten kan jeg godt vise dig, men en <b>samlet pris for flere behandlinger</b> eller en pris tilpasset netop dit hår kan jeg ikke give her. Den afhænger af dit hår, og hvad der skal laves.<br><br>Ring til salonen på <b>97 12 60 60</b> eller skriv til info@hotcut.dk, så får du en konkret pris. Rådgivningen er gratis.`, act: ['call', 'mail', 'prices'] };
+function needsQuote(q) {
+  const t = ' ' + norm(q) + ' ';
+  if (!Q_PRICE.test(t)) return false;
+  const terms = Object.keys(Q_SERVICES).filter(s => t.includes(' ' + s)), fam = new Set(terms.map(s => Q_SERVICES[s]));
+  // two add-ons inside one family ("herreklip og skæg") are a combination too; colour and brow terms describe one listed service
+  const sameFamilyCombo = terms.filter(s => !['farve', 'brow'].includes(Q_SERVICES[s])).length >= 2;
+  return fam.size >= 2 || sameFamilyCombo || Q_TOTAL.test(t) || (fam.size >= 1 && Q_OWN.test(t));
+}
+
 function answer(q) {
+  if (needsQuote(q)) return QUOTE;
   const t = ' ' + norm(q) + ' ', toks = norm(q).split(' ').filter(Boolean).map(stem);
   const scored = KB.map(e => {
     let sc = 0;
@@ -381,7 +406,7 @@ setInterval(() => { if (isPhone()) nudgePhone(); }, 8000);   // keep the phone b
  * a summary and "sends" it. In the mockup nothing leaves the browser: the SMS to the salon and the receipt to the
  * client are shown as a demo. Production: POST to a small serverless function that sends both texts through a
  * Danish SMS gateway (e.g. GatewayAPI) and/or emails the salon, and deletes the request when it is closed. */
-const WL = {"chip": "Ingen tid, der passer?", "kw": ["ingen tid", "ingen ledig", "ingen ledige", "ingen tider", "fuldt booket", "fuld booket", "alt er booket", "optaget", "kan ikke finde", "finder ikke", "passer ikke", "ingen der passer", "venteliste", "afbud", "ønsketid", "ring mig op", "kontakt mig", "ring tilbage", "hurtigst muligt", "en anden tid", "andre tider"], "intro": "Det finder vi ud af sammen 🙌 Fortæl mig, hvad du skal have lavet, og hvornår det passer dig. Så giver jeg salonen besked, og du får en SMS med et tidspunkt. Du kan skrive, tale (🎤) eller trykke.", "askTreat": "Hvad skal du have lavet?", "treat": ["Dameklip", "Herreklip", "Farve eller balayage", "Extensions", "Opsætning til fest", "Andet"], "askTime": "Hvornår passer det dig? Giv mig gerne <b>2–3 forslag</b>, fx “torsdag eftermiddag” eller “fredag 9–12”.", "timeChips": ["Hverdage formiddag", "Hverdage eftermiddag", "Torsdag aften", "Første ledige tid"], "more": "Noteret ✔️ Har du et forslag mere? Flere forslag gør det lettere at finde en tid.", "noMore": "Nej, det er fint", "askName": "Hvad hedder du?", "askPhone": "Tak, {n}! Hvilket mobilnummer må vi sende en SMS til?", "badPhone": "Det ligner ikke et dansk mobilnummer. Skriv de 8 cifre, fx 12 34 56 78.", "askNote": "Er der noget, vi skal vide? Fx hvem du plejer at gå hos, eller om det haster.", "noNote": "Nej tak", "sumT": "Din forespørgsel", "lTreat": "Behandling", "lTimes": "Ønsketider", "lName": "Navn", "lPhone": "Mobil", "lNote": "Bemærkning", "consent": "Når du trykker <b>Send</b>, må Hot Cut kontakte dig på SMS om denne forespørgsel. Vi sletter oplysningerne, når den er afsluttet. <a href=\"{p}\" target=\"_blank\" rel=\"noopener\">Privatlivspolitik</a>", "send": "Send forespørgsel", "edit": "Start forfra", "cancel": "Afbryd", "cancelled": "Helt i orden, jeg har ikke sendt noget. Du kan altid ringe på <b>97 12 60 60</b>.", "done": "Tak, {n}! ✅ Din forespørgsel er sendt til salonen. Vi finder en tid ud fra dine forslag og sender en SMS til <b>{p}</b>, typisk samme dag i åbningstiden.", "demo": "Demo · SMS sendes ikke endnu", "toSalon": "SMS til salonen", "toClient": "Kvittering til dig", "smsSalon": "Ny ønsketid fra hotcut.dk 💇 {n}, {p}. {t}. Ønsker: {w}.{x} Svar kunden på SMS eller ring.", "smsClient": "Hej {f} 👋 Tak for din forespørgsel hos Hot Cut. Vi finder en tid og skriver til dig hurtigst muligt. Mvh Hot Cut · 97 12 60 60", "demoNote": "Ved lancering kobles en dansk SMS-tjeneste på (fx GatewayAPI), så beskederne sendes automatisk. Salonen kan også få forespørgslen på mail.", "note": " Note: ", "ph": {"treat": "Fx dameklip og farve …", "time": "Fx torsdag eftermiddag …", "more": "Et forslag mere …", "name": "Dit navn …", "phone": "12 34 56 78", "note": "Skriv en bemærkning …", "confirm": "Skriv “send” eller tryk …"}, "phDefault": "Skriv eller tal …", "yes": ["send", "ja", "ok", "okay", "send den", "ja tak"], "no": ["nej", "nej tak", "det er fint", "færdig", "ikke mere", "nope"], "stop": ["afbryd", "annuller", "stop", "fortryd"], "retT": "Fandt du en tid, der passer? 🙂", "retS": "Hvis ikke, så fortæl mig, hvornår du kan. Så giver jeg salonen besked, og du får en SMS.", "retNo": "Nej, hjælp mig", "retYes": "Ja, tak!", "close": "Luk", "priv": "legal/privatlivspolitik.html"};
+const WL = {"chip": "Ingen tid, der passer?", "kw": ["ingen tid", "ingen ledig", "ingen ledige", "ingen tider", "fuldt booket", "fuld booket", "alt er booket", "optaget", "kan ikke finde", "finder ikke", "passer ikke", "ingen der passer", "venteliste", "afbud", "ønsketid", "ring mig op", "kontakt mig", "ring tilbage", "hurtigst muligt", "en anden tid", "andre tider"], "intro": "Det finder vi ud af sammen 🙌 Fortæl mig, hvad du skal have lavet, og hvornår det passer dig. Så giver jeg salonen besked, og du får en SMS med et tidspunkt. Du kan skrive, tale (🎤) eller trykke.", "askTreat": "Hvad skal du have lavet?", "treat": ["Dameklip", "Herreklip", "Farve eller balayage", "Extensions", "Opsætning til fest", "Andet"], "askTime": "Hvornår passer det dig? Giv mig gerne <b>2–3 forslag</b>, fx “torsdag eftermiddag” eller “fredag 9–12”.", "timeChips": ["Hverdage formiddag", "Hverdage eftermiddag", "Torsdag aften", "Første ledige tid"], "more": "Noteret ✔️ Har du et forslag mere? Flere forslag gør det lettere at finde en tid.", "noMore": "Nej, det er fint", "askName": "Hvad hedder du?", "askPhone": "Tak, {n}! Hvilket mobilnummer må vi sende en SMS til?", "badPhone": "Det ligner ikke et dansk mobilnummer. Skriv de 8 cifre, fx 12 34 56 78.", "askNote": "Er der noget, vi skal vide? Fx hvem du plejer at gå hos, eller om det haster.", "noNote": "Nej tak", "sumT": "Din forespørgsel", "lTreat": "Behandling", "lTimes": "Ønsketider", "lName": "Navn", "lPhone": "Mobil", "lNote": "Bemærkning", "consent": "Når du trykker <b>Send</b>, må Hot Cut kontakte dig på SMS om denne forespørgsel. Vi sletter oplysningerne, når den er afsluttet. <a href=\"{p}\" target=\"_blank\" rel=\"noopener\">Privatlivspolitik</a>", "send": "Send forespørgsel", "edit": "Start forfra", "cancel": "Afbryd", "cancelled": "Helt i orden, jeg har ikke sendt noget. Du kan altid ringe på <b>97 12 60 60</b>.", "done": "Tak, {n}! ✅ Din forespørgsel er sendt til salonen. Vi finder en tid ud fra dine forslag og sender en SMS til <b>{p}</b>, typisk samme dag i åbningstiden.", "demo": "Demo · SMS sendes ikke endnu", "toSalon": "SMS til salonen", "toClient": "Kvittering til dig", "smsSalon": "Ny ønsketid fra hotcut.dk 💇 {n}, {p}. {t}. Ønsker: {w}.{x} Svar kunden på SMS eller ring.", "smsClient": "Hej {f} 👋 Tak for din forespørgsel hos Hot Cut. Vi finder en tid og skriver til dig hurtigst muligt. Mvh Hot Cut · 97 12 60 60", "demoNote": "Ved lancering kobles en dansk SMS-tjeneste på (fx GatewayAPI), så beskederne sendes automatisk. Salonen kan også få forespørgslen på mail.", "note": " Note: ", "ph": {"treat": "Fx dameklip og farve …", "time": "Fx torsdag eftermiddag …", "more": "Et forslag mere …", "name": "Dit navn …", "phone": "12 34 56 78", "note": "Skriv en bemærkning …", "confirm": "Skriv “send” eller tryk …"}, "phDefault": "Skriv eller tal …", "yes": ["send", "ja", "ok", "okay", "send den", "ja tak"], "no": ["nej", "nej tak", "det er fint", "færdig", "ikke mere", "nope"], "stop": ["afbryd", "annuller", "stop", "fortryd"], "retT": "Fandt du en tid, der passer? 🙂", "retS": "Hvis ikke, så ring til salonen. Ofte kan de finde en tid, fx ved et afbud.", "retNo": "Nej, hjælp mig", "retYes": "Ja, tak!", "close": "Luk", "priv": "legal/privatlivspolitik.html"};
 const PRIV = ((document.currentScript && document.currentScript.src) || '').replace(/assistant(-en)?\.js.*$/, '') + WL.priv;
 let wish = null, spokeLast = false;
 function setChips(list, primary) {
@@ -399,8 +424,12 @@ function wishUI(step, list, primary) {
   input.placeholder = WL.ph[step] || WL.phDefault; input.inputMode = step === 'phone' ? 'tel' : 'text';
 }
 function startWish() {
-  wish = { step: 'treat', d: { times: [] } }; track('wish_start');
-  botSay(WL.intro).then(() => botSay(WL.askTreat, 380)).then(() => wishUI('treat', WL.treat));
+  // the salon books only through its own booking system, so the assistant does not collect time requests
+  track('wish_start');
+  const typing = document.createElement('div'); typing.className = 'hc-msg bot hc-typing'; typing.innerHTML = '<i></i><i></i><i></i>';
+  log.appendChild(typing); log.scrollTop = log.scrollHeight;
+  const html = `Finder du ikke en tid, der passer, i bookingen? <b>Ring til salonen på 97 12 60 60</b>. Ofte kan de finde en løsning, fx hvis der kommer et afbud.<br><br>Al booking foregår i salonens bookingsystem, så jeg kan ikke reservere eller ønske tider for dig her.`;
+  setTimeout(() => { typing.remove(); bubble(html, 'bot', ['call', 'book']); if (spokeLast) speak(html); }, 520);
 }
 function endWish() { wish = null; setChips(); input.placeholder = WL.phDefault; input.inputMode = 'text'; }
 const isAny = (q, list) => list.includes(norm(q));

@@ -181,7 +181,36 @@ function faqMatch(q) {
   return best && best.sc >= 4 ? best : null;
 }
 const esc = t => t.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+
+/* ---------- price guard ----------
+   The assistant only repeats single prices exactly as the price list shows them.
+   It never adds prices together or estimates a price for someone's own hair:
+   combinations, totals and individual colour work always go to the salon. */
+const Q_PRICE = /(?<!\p{L})(price|prices|priced|cost|costs|how much|dkk|kr|pay|charge|quote|estimate|total|altogether|in total)(?!\p{L})/u;
+const Q_TOTAL = /(?<!\p{L})(total|altogether|in total|combined|combination|package price|all together|plus)(?!\p{L})/u;
+const Q_OWN = /(?<!\p{L})(my hair|my colour|my color|my long|my short|my thick|my thin|my grey|my gray|thick hair|thin hair|lots of hair|from black|from dark|dark hair|grey hair|gray hair|colour correction|color correction|change colour|change color|go lighter|go blonde|platinum)(?!\p{L})/u;
+// each service maps to a family; a question that names two families asks for a combination
+const Q_SERVICES = { cut: 'cut', haircut: 'cut', women: 'women', womens: 'women', fringe: 'women', bangs: 'women', undercut: 'women', treatment: 'women',
+  men: 'men', mens: 'men', clipper: 'men', beard: 'men', children: 'kids', kids: 'kids', child: 'kids', girls: 'kids', boys: 'kids',
+  colour: 'colour', color: 'colour', highlights: 'colour', balayage: 'colour', babylights: 'colour', roots: 'colour', extension: 'ext', hairband: 'ext',
+  keratin: 'keratin', perm: 'perm', updo: 'updo', bridal: 'updo', wedding: 'updo', confirmation: 'updo', trial: 'updo', 'make-up': 'makeup', makeup: 'makeup',
+  brow: 'brow', brows: 'brow', eyebrow: 'brow', lash: 'brow', lashes: 'brow', analysis: 'analysis' };
+const QUOTE = { id: 'quote', a: `I can show you the fixed prices from the price list, but I can't give a <b>combined price for several treatments</b> or a price tailored to your hair here. It depends on your hair and what needs doing.<br><br>Call the salon on <b>97 12 60 60</b> or write to info@hotcut.dk and you'll get a concrete price. Advice is free.`, act: ['call', 'mail', 'prices'] };
+function needsQuote(q) {
+  const t = ' ' + norm(q) + ' ';
+  if (!Q_PRICE.test(t)) return false;
+  const terms = Object.keys(Q_SERVICES).filter(s => new RegExp('(?<!\\p{L})' + norm(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?!\\p{L})', 'u').test(t));
+  const fam = new Set(terms.map(s => Q_SERVICES[s]));
+  // the generic word "cut" next to "women's"/"men's"/"children's" names one service, not two
+  if (fam.has('cut') && (fam.has('women') || fam.has('men') || fam.has('kids'))) fam.delete('cut');
+  // two add-ons inside one family ("men's cut and beard") are a combination too; colour and brow terms describe one listed service
+  const own = terms.filter(s => !['colour', 'brow', 'cut'].includes(Q_SERVICES[s]));
+  const sameFamilyCombo = new Set(own).size >= 2;
+  return fam.size >= 2 || sameFamilyCombo || Q_TOTAL.test(t) || (fam.size >= 1 && Q_OWN.test(t));
+}
+
 function answer(q) {
+  if (needsQuote(q)) return QUOTE;
   const t = ' ' + norm(q) + ' ', toks = norm(q).split(' ').filter(Boolean).map(stem);
   const scored = KB.map(e => {
     let sc = 0;
@@ -383,7 +412,7 @@ setInterval(() => { if (isPhone()) nudgePhone(); }, 8000);   // keep the phone b
  * a summary and "sends" it. In the mockup nothing leaves the browser: the SMS to the salon and the receipt to the
  * client are shown as a demo. Production: POST to a small serverless function that sends both texts through a
  * Danish SMS gateway (e.g. GatewayAPI) and/or emails the salon, and deletes the request when it is closed. */
-const WL = {"chip": "Can't find a time?", "kw": ["no time", "no times", "no slot", "no slots", "fully booked", "booked up", "nothing available", "can't find", "cannot find", "not available", "doesn't suit", "does not suit", "waiting list", "waitlist", "cancellation", "call me back", "contact me", "call me", "as soon as possible", "another time", "other times"], "intro": "Let's sort it out together 🙌 Tell me what you'd like done and when suits you. I'll pass it on to the salon, and you'll get a text with a time. You can type, speak (🎤) or tap.", "askTreat": "What would you like done?", "treat": ["Women's cut", "Men's cut", "Colour or balayage", "Extensions", "Updo for a special day", "Something else"], "askTime": "When suits you? Give me <b>2–3 options</b> if you can, e.g. “Thursday afternoon” or “Friday 9–12”.", "timeChips": ["Weekday mornings", "Weekday afternoons", "Thursday evening", "First available"], "more": "Noted ✔️ Do you have another option? More options make it easier to find a time.", "noMore": "No, that's fine", "askName": "What's your name?", "askPhone": "Thanks, {n}! Which mobile number can we text?", "badPhone": "That doesn't look like a Danish mobile number. Type the 8 digits, e.g. 12 34 56 78.", "askNote": "Anything we should know? E.g. who you usually see, or if it's urgent.", "noNote": "No, thanks", "sumT": "Your request", "lTreat": "Treatment", "lTimes": "Preferred times", "lName": "Name", "lPhone": "Mobile", "lNote": "Note", "consent": "When you tap <b>Send</b>, Hot Cut may text you about this request. We delete the details once it is closed. <a href=\"{p}\" target=\"_blank\" rel=\"noopener\">Privacy policy</a>", "send": "Send request", "edit": "Start over", "cancel": "Cancel", "cancelled": "No problem, I haven't sent anything. You can always call us on <b>97 12 60 60</b>.", "done": "Thanks, {n}! ✅ Your request has been sent to the salon. We will find a time based on your options and text <b>{p}</b>, usually the same day during opening hours.", "demo": "Demo · no texts are sent yet", "toSalon": "Text to the salon", "toClient": "Receipt to you", "smsSalon": "New time request from hotcut.dk 💇 {n}, {p}. {t}. Wishes: {w}.{x} Reply by text or call.", "smsClient": "Hi {f} 👋 Thanks for your request at Hot Cut. We will find a time and text you as soon as possible. Hot Cut · 97 12 60 60", "demoNote": "At launch a Danish SMS service (e.g. GatewayAPI) is connected, so the texts go out automatically. The salon can also get the request by email.", "note": " Note: ", "ph": {"treat": "E.g. a cut and colour …", "time": "E.g. Thursday afternoon …", "more": "Another option …", "name": "Your name …", "phone": "12 34 56 78", "note": "Add a note …", "confirm": "Type “send” or tap …"}, "phDefault": "Type or speak …", "yes": ["send", "yes", "ok", "okay", "send it", "yes please"], "no": ["no", "no thanks", "that's fine", "thats fine", "done", "nope"], "stop": ["cancel", "stop", "abort", "never mind"], "retT": "Did you find a time that suits you? 🙂", "retS": "If not, tell me when you can make it. I'll let the salon know, and you'll get a text.", "retNo": "No, help me", "retYes": "Yes, thanks!", "close": "Close", "priv": "en/privacy.html"};
+const WL = {"chip": "Can't find a time?", "kw": ["no time", "no times", "no slot", "no slots", "fully booked", "booked up", "nothing available", "can't find", "cannot find", "not available", "doesn't suit", "does not suit", "waiting list", "waitlist", "cancellation", "call me back", "contact me", "call me", "as soon as possible", "another time", "other times"], "intro": "Let's sort it out together 🙌 Tell me what you'd like done and when suits you. I'll pass it on to the salon, and you'll get a text with a time. You can type, speak (🎤) or tap.", "askTreat": "What would you like done?", "treat": ["Women's cut", "Men's cut", "Colour or balayage", "Extensions", "Updo for a special day", "Something else"], "askTime": "When suits you? Give me <b>2–3 options</b> if you can, e.g. “Thursday afternoon” or “Friday 9–12”.", "timeChips": ["Weekday mornings", "Weekday afternoons", "Thursday evening", "First available"], "more": "Noted ✔️ Do you have another option? More options make it easier to find a time.", "noMore": "No, that's fine", "askName": "What's your name?", "askPhone": "Thanks, {n}! Which mobile number can we text?", "badPhone": "That doesn't look like a Danish mobile number. Type the 8 digits, e.g. 12 34 56 78.", "askNote": "Anything we should know? E.g. who you usually see, or if it's urgent.", "noNote": "No, thanks", "sumT": "Your request", "lTreat": "Treatment", "lTimes": "Preferred times", "lName": "Name", "lPhone": "Mobile", "lNote": "Note", "consent": "When you tap <b>Send</b>, Hot Cut may text you about this request. We delete the details once it is closed. <a href=\"{p}\" target=\"_blank\" rel=\"noopener\">Privacy policy</a>", "send": "Send request", "edit": "Start over", "cancel": "Cancel", "cancelled": "No problem, I haven't sent anything. You can always call us on <b>97 12 60 60</b>.", "done": "Thanks, {n}! ✅ Your request has been sent to the salon. We will find a time based on your options and text <b>{p}</b>, usually the same day during opening hours.", "demo": "Demo · no texts are sent yet", "toSalon": "Text to the salon", "toClient": "Receipt to you", "smsSalon": "New time request from hotcut.dk 💇 {n}, {p}. {t}. Wishes: {w}.{x} Reply by text or call.", "smsClient": "Hi {f} 👋 Thanks for your request at Hot Cut. We will find a time and text you as soon as possible. Hot Cut · 97 12 60 60", "demoNote": "At launch a Danish SMS service (e.g. GatewayAPI) is connected, so the texts go out automatically. The salon can also get the request by email.", "note": " Note: ", "ph": {"treat": "E.g. a cut and colour …", "time": "E.g. Thursday afternoon …", "more": "Another option …", "name": "Your name …", "phone": "12 34 56 78", "note": "Add a note …", "confirm": "Type “send” or tap …"}, "phDefault": "Type or speak …", "yes": ["send", "yes", "ok", "okay", "send it", "yes please"], "no": ["no", "no thanks", "that's fine", "thats fine", "done", "nope"], "stop": ["cancel", "stop", "abort", "never mind"], "retT": "Did you find a time that suits you? 🙂", "retS": "If not, call the salon. They can often find a time, for example when someone cancels.", "retNo": "No, help me", "retYes": "Yes, thanks!", "close": "Close", "priv": "en/privacy.html"};
 const PRIV = ((document.currentScript && document.currentScript.src) || '').replace(/assistant(-en)?\.js.*$/, '') + WL.priv;
 let wish = null, spokeLast = false;
 function setChips(list, primary) {
@@ -401,8 +430,12 @@ function wishUI(step, list, primary) {
   input.placeholder = WL.ph[step] || WL.phDefault; input.inputMode = step === 'phone' ? 'tel' : 'text';
 }
 function startWish() {
-  wish = { step: 'treat', d: { times: [] } }; track('wish_start');
-  botSay(WL.intro).then(() => botSay(WL.askTreat, 380)).then(() => wishUI('treat', WL.treat));
+  // the salon books only through its own booking system, so the assistant does not collect time requests
+  track('wish_start');
+  const typing = document.createElement('div'); typing.className = 'hc-msg bot hc-typing'; typing.innerHTML = '<i></i><i></i><i></i>';
+  log.appendChild(typing); log.scrollTop = log.scrollHeight;
+  const html = `Can't find a time that suits you in the booking system? <b>Call the salon on 97 12 60 60</b>. They can often find a solution, for example when someone cancels.<br><br>All bookings go through the salon's booking system, so I can't reserve or request times for you here.`;
+  setTimeout(() => { typing.remove(); bubble(html, 'bot', ['call', 'book']); if (spokeLast) speak(html); }, 520);
 }
 function endWish() { wish = null; setChips(); input.placeholder = WL.phDefault; input.inputMode = 'text'; }
 const isAny = (q, list) => list.includes(norm(q));
